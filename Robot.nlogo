@@ -1,14 +1,21 @@
+breed [ robots robot ]
+breed [ robots2 robotB ]
+breed [ robots3 robotC ]
+breed [ robots4 robotD ]
+
 globals [
   goals_x
   goals_y
-  finish?
+  finish_1?
+  finish_2?
+  finish_3?
+  finish_4?
   draw?
+  num-of-parts
 ]
 
-breed [ pieces piece ]   ;; pieces fall through the air...
-
-pieces-own [
-  x y      ;; these are the piece's offsets relative to turtle 0
+turtles-own [
+  x y
 ]
 
 ;;;;;;;;;;;;;;;;;;;;;;;;
@@ -17,11 +24,12 @@ pieces-own [
 to Initiate
   clear-all
   set-default-shape turtles "square"
-  set finish? false
+  set finish_1? false
+  set finish_2? false
+  set finish_3? false
+  set finish_4? false
   set draw? false
-
-  create-pieces 4
-  [ set heading 180 ]
+  set num-of-parts 4
 
   ;; draw the board
   ask patches
@@ -29,24 +37,19 @@ to Initiate
     [ set pcolor gray ]
   ]
 
-  set goals_x min-pxcor + 2;
-  set goals_y min-pycor + 2;
-  ask patches
-  [ if (pxcor = goals_x) and (pycor = goals_y)
-    [ set pcolor white ]
-  ]
-
-  ;; setup the new piece
-  new-piece
   reset-ticks
+end
+
+to call-robots
+  setup-robot
 end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Interface Buttons ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 to rotate-right
-  if rotate-right-clear? and not finish?
-    [ ask pieces [ rotate-me-right ] ]
+  if rotate-right-clear? and not finish_1? and not finish_2? and not finish_3? and not finish_4?
+    [ ask robots [ rotate-me-right ] ]
 end
 
 to rotate-me-right  ;; Piece Procedure
@@ -59,8 +62,8 @@ to rotate-me-right  ;; Piece Procedure
 end
 
 to rotate-left
-  if rotate-left-clear? and not finish?
-    [ ask pieces [ rotate-me-left ] ]
+  if rotate-left-clear? and not finish_1? and not finish_2? and not finish_3? and not finish_4?
+    [ ask robots [ rotate-me-left ] ]
 end
 
 to rotate-me-left  ;; Piece Procedure
@@ -72,28 +75,32 @@ to rotate-me-left  ;; Piece Procedure
   set ycor ([ycor] of turtle 0) + y
 end
 
-to shift-right
-  if (clear-at? 1 0) and not finish?
-    [ ask pieces [ set xcor xcor + 1 ] ]
+to shift-right [n]
+  if n = 1 and clear-at? 1 1 0 and not finish_1? [ ask robots [ set xcor xcor + 1 ] ]
+  if n = 2 and clear-at? 2 1 0 and not finish_2? [ ask robots2 [ set xcor xcor + 1 ] ]
+  if n = 3 and clear-at? 3 1 0 and not finish_3? [ ask robots3 [ set xcor xcor + 1 ] ]
+  if n = 4 and clear-at? 4 1 0 and not finish_4? [ ask robots4 [ set xcor xcor + 1 ] ]
 end
 
-to shift-left
-  if (clear-at? -1 0) and not finish?
-    [ ask pieces [ set xcor xcor - 1 ] ]
+to shift-left [n]
+  if (n = 1) and (clear-at? 1 -1 0) and not finish_1? [ ask robots [ set xcor xcor - 1 ] ]
+  if (n = 2) and (clear-at? 2 -1 0) and not finish_2? [ ask robots2 [ set xcor xcor - 1 ] ]
+  if (n = 3) and (clear-at? 3 -1 0) and not finish_3? [ ask robots3 [ set xcor xcor - 1 ] ]
+  if (n = 4) and (clear-at? 4 -1 0) and not finish_4? [ ask robots4 [ set xcor xcor - 1 ] ]
 end
 
-to shift-down
-  if (clear-at? 0 -1) and not finish?
-    [ ask pieces [ set ycor ycor - 1 ] ]
+to shift-down [n]
+  if (n = 1) and (clear-at? 1 0 -1) and not finish_1? [ ask robots [ set ycor ycor - 1 ] ]
+  if (n = 2) and (clear-at? 2 0 -1) and not finish_2? [ ask robots2 [ set ycor ycor - 1 ] ]
+  if (n = 3) and (clear-at? 3 0 -1) and not finish_3? [ ask robots3 [ set ycor ycor - 1 ] ]
+  if (n = 4) and (clear-at? 4 0 -1) and not finish_3? [ ask robots4 [ set ycor ycor - 1 ] ]
 end
 
-to shift-up
-  if (clear-at? 0 1) and not finish?
-    [ ask pieces [ set ycor ycor + 1 ] ]
-end
-
-to draw-obstacle
-
+to shift-up [n]
+  if (n = 1) and (clear-at? 1 0 1) and not finish_1? [ ask robots [ set ycor ycor + 1 ] ]
+  if (n = 2) and (clear-at? 2 0 1) and not finish_2? [ ask robots2 [ set ycor ycor + 1 ] ]
+  if (n = 3) and (clear-at? 3 0 1) and not finish_3? [ ask robots3 [ set ycor ycor + 1 ] ]
+  if (n = 4) and (clear-at? 4 0 1) and not finish_4? [ ask robots4 [ set ycor ycor + 1 ] ]
 end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -111,12 +118,24 @@ to delete
   display
 end
 
+to draw-goal
+  if mouse-down?
+    [ ask patch mouse-xcor mouse-ycor [set pcolor white]
+      set goals_x mouse-xcor;
+      set goals_y mouse-ycor;
+
+      ask patches
+        [ if (pxcor = goals_x) and (pycor = goals_y) [ set pcolor white ]]
+      display
+     ]
+end
+
 to go
-  if finish? [user-message "Finish!" stop ]
-    every (0.05)
-      [ if (not finish?)
-          [ ask pieces [find-goal] ]
-    ]
+  if finish_1? and finish_2? and finish_3? [user-message "Finish!" stop ]
+  every (0.05)
+    [ if (not finish_1? or not finish_2? or not finish_3?)
+        [ ask robots [find-goal] ]
+  ]
   display
 end
 
@@ -124,8 +143,6 @@ end
 ;;; Overlap prevention Reporters ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 to-report clear? [p]  ;; p is a patch
-  if (is-finish? p)
-    [ set finish? true ]
   if p = nobody [ report false]
   report ([pcolor] of p = black)
 end
@@ -134,47 +151,113 @@ to-report is-finish? [p]
   report ([pcolor] of p = white)
 end
 
-to-report clear-at? [xoff yoff]
-  report all? pieces [clear? patch-at xoff yoff]
+to-report clear-at? [n xoff yoff]
+  if n = 1 [report all? robots [clear? patch-at xoff yoff]]
+  if n = 2 [report all? robots2 [clear? patch-at xoff yoff]]
+  if n = 3 [report all? robots3 [clear? patch-at xoff yoff]]
+  if n = 4 [report all? robots4 [clear? patch-at xoff yoff]]
 end
 
 to-report rotate-left-clear?
-  report all? pieces [clear? patch-at (- y) x]
+  report all? robots [clear? patch-at (- y) x]
 end
 
 to-report rotate-right-clear?
-  report all? pieces [clear? patch-at y (- x)]
+  report all? robots [clear? patch-at y (- x)]
+end
+
+to-report random-pos-x
+  report (random ((max-pxcor - 3) - (min-pxcor + 4)) + (min-pxcor + 3))
+end
+
+to-report random-pos-y
+  report (random ((max-pycor - 3) - (min-pycor + 3)) + (min-pycor + 3))
 end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Pieces Procedures ;;;
+;;; robots Procedures ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 
-to new-piece
+to setup-robot
+  create-robots num-of-parts
   let new-shape random 7
-  ask turtle 0 [ setxy random 21 random 11 ]
-  ask pieces [ setup-piece new-shape ]
+  let pos-x random-pos-x
+  let pos-y random-pos-y
+  ask robot 0 [ setxy pos-x pos-y]
+  ask robots [ setup-part 1 new-shape set heading 180 ]
+
+  create-robots2 num-of-parts
+  set new-shape random 7
+  set pos-x random-pos-x
+  set pos-y random-pos-y
+  ask patches [
+    while [not (clear? patch-at pos-x pos-y)]
+      [ set pos-x random-pos-x
+        set pos-y random-pos-y]
+  ]
+  ask robotB 4 [ setxy pos-x pos-y ]
+  ask robots2 [ setup-part 2 new-shape set heading 180 ]
+
+  create-robots3 num-of-parts
+  set new-shape random 7
+  set pos-x random-pos-x
+  set pos-y random-pos-y
+  ask patches [
+    while [not (clear? patch-at pos-x pos-y)]
+      [ set pos-x random-pos-x
+        set pos-y random-pos-y]
+  ]
+  ask robotC 8 [ setxy pos-x pos-y ]
+  ask robots3 [ setup-part 3 new-shape set heading 180 ]
+
+  create-robots4 num-of-parts
+  set new-shape random 7
+  set pos-x random-pos-x
+  set pos-y random-pos-y
+  ask patches [
+    while [not (clear? patch-at pos-x pos-y)]
+      [ set pos-x random-pos-x
+        set pos-y random-pos-y]
+  ]
+  ask robotD 12 [ setxy pos-x pos-y ]
+  ask robots4 [ setup-part 4 new-shape set heading 180 ]
 end
 
-to setup-piece [s]  ;; Piece Procedure
-  if (s = 0) [ setup-o  set color blue   ]
-  if (s = 1) [ setup-l  set color red    ]
-  if (s = 2) [ setup-j  set color yellow ]
-  if (s = 3) [ setup-t  set color green  ]
-  if (s = 4) [ setup-s  set color orange ]
-  if (s = 5) [ setup-z  set color sky    ]
-  if (s = 6) [ setup-i  set color violet ]
+to setup-part [n s]  ;; n is which robot (1,2,3) and s is a shape
+  if (s = 0) [ setup-o n set color blue   ]
+  if (s = 1) [ setup-l n  set color red    ]
+  if (s = 2) [ setup-j n set color yellow ]
+  if (s = 3) [ setup-t n set color green  ]
+  if (s = 4) [ setup-s n set color orange ]
+  if (s = 5) [ setup-z n set color sky    ]
+  if (s = 6) [ setup-i n set color violet ]
 
-  setxy ([xcor] of turtle 0) + x ([ycor] of turtle 0) + y
+  if (n = 1) [ setxy [xcor] of robot 0 + x [ycor] of robot 0 + y ]
+  if (n = 2) [ setxy [xcor] of robotB 4 + x [ycor] of robotB 4 + y ]
+  if (n = 3) [ setxy [xcor] of robotC 8 + x [ycor] of robotC 8 + y ]
+  if (n = 4) [ setxy [xcor] of robotD 12 + x [ycor] of robotD 12 + y ]
 end
 
 to find-goal
-  shift-left
-  shift-down
+  if (not finish_1?)
+    [ shift-left 1
+      shift-down 1 ]
+
+  if (not finish_2?)
+    [ shift-left 2
+      shift-down 2 ]
+
+  if (not finish_3?)
+    [ shift-left 3
+      shift-down 3 ]
+
+    if (not finish_4?)
+    [ shift-left 4
+      shift-down 4 ]
 end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Pieces Setup Procedures ;;;
+;;; robots Setup Procedures ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; The numbers 0123 show the relative positions of turtles
@@ -183,63 +266,75 @@ end
 ;; O-Block
 ;; 01
 ;; 23
-to setup-o ;;Piece Procedure
-  if (who = 1) [ set x 1 set y  0 ]
-  if (who = 2) [ set x 0 set y -1 ]
-  if (who = 3) [ set x 1 set y -1 ]
+to setup-o [n] ;;Piece Procedure
+  if (who = 1 + (n * num-of-parts - num-of-parts)) [ set x 1 set y  0 ]
+  if (who = 2 + (n * num-of-parts - num-of-parts)) [ set x 0 set y -1 ]
+  if (who = 3 + (n * num-of-parts - num-of-parts)) [ set x 1 set y -1 ]
 end
 
+;;------------------------------------
 ;; L-Block
 ;; 201
 ;; 3
-to setup-l ;;Piece Procedure
-  if (who = 1) [ set x  1 set y  0 ]
-  if (who = 2) [ set x -1 set y  0 ]
-  if (who = 3) [ set x -1 set y -1 ]
+to setup-l [n]  ;;Piece Procedure
+  if (who = 1 + (n * num-of-parts - num-of-parts)) [ set x  1 set y  0 ]
+  if (who = 2 + (n * num-of-parts - num-of-parts)) [ set x -1 set y  0 ]
+  if (who = 3 + (n * num-of-parts - num-of-parts)) [ set x -1 set y -1 ]
+  if (who = 4 + (n * num-of-parts - num-of-parts)) [ set x -1 set y -1 ]
 end
 
+;;------------------------------------
 ;; J-Block
 ;; 102
 ;;   3
-to setup-j ;;Piece Procedure
-  if (who = 1) [ set x -1 set y  0 ]
-  if (who = 2) [ set x  1 set y  0 ]
-  if (who = 3) [ set x  1 set y -1 ]
+to setup-j [n]  ;;Piece Procedure
+  if (who = 1 + (n * num-of-parts - num-of-parts)) [ set x -1 set y  0 ]
+  if (who = 2 + (n * num-of-parts - num-of-parts)) [ set x  1 set y  0 ]
+  if (who = 3 + (n * num-of-parts - num-of-parts)) [ set x  1 set y -1 ]
+  if (who = 4 + (n * num-of-parts - num-of-parts)) [ set x  1 set y -1 ]
 end
 
+;;------------------------------------
 ;; T-Block
 ;; 201
 ;;  3
-to setup-t ;;Piece Procedure
-  if (who = 1) [ set x  1 set y  0 ]
-  if (who = 2) [ set x -1 set y  0 ]
-  if (who = 3) [ set x  0 set y -1 ]
+to setup-t [n]  ;;Piece Procedure
+  if (who = 1 + (n * num-of-parts - num-of-parts)) [ set x  1 set y  0 ]
+  if (who = 2 + (n * num-of-parts - num-of-parts)) [ set x -1 set y  0 ]
+  if (who = 3 + (n * num-of-parts - num-of-parts)) [ set x  0 set y -1 ]
+  if (who = 4 + (n * num-of-parts - num-of-parts)) [ set x  0 set y -1 ]
 end
 
+;;------------------------------------
 ;; S-Block
 ;;  01
 ;; 23
-to setup-s ;;Piece Procedure
-  if (who = 1) [ set x  1 set y  0 ]
-  if (who = 2) [ set x -1 set y -1 ]
-  if (who = 3) [ set x  0 set y -1 ]
+to setup-s [n]  ;;Piece Procedure
+  if (who = 1 + (n * num-of-parts - num-of-parts)) [ set x  1 set y  0 ]
+  if (who = 2 + (n * num-of-parts - num-of-parts)) [ set x -1 set y -1 ]
+  if (who = 3 + (n * num-of-parts - num-of-parts)) [ set x  0 set y -1 ]
+  if (who = 4 + (n * num-of-parts - num-of-parts)) [ set x  0 set y -1 ]
 end
 
+;;------------------------------------
 ;; Z-block
 ;; 10
 ;;  32
-to setup-z ;;Piece Procedure
-  if (who = 1) [ set x -1 set y  0 ]
-  if (who = 2) [ set x  1 set y -1 ]
-  if (who = 3) [ set x  0 set y -1 ]
+to setup-z [n]  ;;Piece Procedure
+  if (who = 1 + (n * num-of-parts - num-of-parts)) [ set x -1 set y  0 ]
+  if (who = 2 + (n * num-of-parts - num-of-parts)) [ set x  1 set y -1 ]
+  if (who = 3 + (n * num-of-parts - num-of-parts)) [ set x  0 set y -1 ]
+  if (who = 4 + (n * num-of-parts - num-of-parts)) [ set x  0 set y -1 ]
 end
 
+;;------------------------------------
 ;; I-Block
 ;; 1023
-to setup-i ;;Piece Procedure
-  if (who = 1) [ set x -1 set y 0 ]
-  if (who = 2) [ set x  1 set y 0 ]
-  if (who = 3) [ set x  2 set y 0 ]
+to setup-i [n] ;;Piece Procedure
+  if (who = 1 + (n * num-of-parts - num-of-parts)) [ set x -1 set y 0 ]
+  if (who = 2 + (n * num-of-parts - num-of-parts)) [ set x  1 set y 0 ]
+  if (who = 3 + (n * num-of-parts - num-of-parts)) [ set x  2 set y 0 ]
+  if (who = 4 + (n * num-of-parts - num-of-parts)) [ set x  2 set y 0 ]
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -270,10 +365,10 @@ ticks
 30.0
 
 BUTTON
-211
-208
-344
-241
+28
+32
+161
+65
 Initiate
 Initiate
 NIL
@@ -281,18 +376,18 @@ NIL
 T
 OBSERVER
 NIL
-N
+I
 NIL
 NIL
 1
 
 BUTTON
-126
-336
-181
-369
+1217
+220
+1272
+253
 Right
-shift-right
+shift-right 2
 NIL
 1
 T
@@ -304,12 +399,12 @@ NIL
 0
 
 BUTTON
-8
-336
-63
-369
+1099
+220
+1154
+253
 Left
-shift-left
+shift-left 2
 NIL
 1
 T
@@ -321,10 +416,10 @@ NIL
 0
 
 BUTTON
-19
-208
-86
-241
+1115
+282
+1182
+315
 RotLeft
 rotate-left
 NIL
@@ -338,10 +433,10 @@ NIL
 0
 
 BUTTON
-88
-208
-155
-241
+1184
+282
+1251
+315
 RotRight
 rotate-right
 NIL
@@ -355,10 +450,10 @@ NIL
 0
 
 BUTTON
-210
-250
-345
-283
+27
+80
+162
+113
 Draw Obstacle
 draw
 T
@@ -366,18 +461,18 @@ T
 T
 OBSERVER
 NIL
-P
+D
 NIL
 NIL
 0
 
 BUTTON
-63
-336
-126
-369
+1154
+220
+1217
+253
 Down
-shift-down
+shift-down 2
 NIL
 1
 T
@@ -389,12 +484,12 @@ NIL
 1
 
 BUTTON
-63
-304
-126
-337
+1154
+188
+1217
+221
 Up
-shift-up
+shift-up 2
 NIL
 1
 T
@@ -406,10 +501,10 @@ NIL
 1
 
 BUTTON
-213
-330
-345
-363
+185
+130
+322
+163
 Go!
 Go
 T
@@ -423,10 +518,10 @@ NIL
 1
 
 BUTTON
-211
-291
-346
-324
+184
+81
+319
+114
 Delete Obstacle
 delete
 T
@@ -438,6 +533,65 @@ NIL
 NIL
 NIL
 1
+
+BUTTON
+185
+32
+320
+65
+Call Robots
+call-robots
+NIL
+1
+T
+OBSERVER
+NIL
+F
+NIL
+NIL
+1
+
+BUTTON
+26
+127
+162
+160
+Set Goal
+draw-goal
+T
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+PLOT
+25
+188
+322
+338
+plot 1
+time
+distance
+0.0
+10.0
+0.0
+10.0
+true
+false
+"" ""
+PENS
+"default" 1.0 0 -16777216 true "" "plot count turtles"
+
+OUTPUT
+24
+356
+320
+424
+11
 
 @#$#@#$#@
 ## WHAT IS IT?
