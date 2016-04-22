@@ -2,6 +2,7 @@ globals [
   goals_x
   goals_y
   finish?
+  draw?
 ]
 
 breed [ pieces piece ]   ;; pieces fall through the air...
@@ -17,6 +18,7 @@ to Initiate
   clear-all
   set-default-shape turtles "square"
   set finish? false
+  set draw? false
 
   create-pieces 4
   [ set heading 180 ]
@@ -90,15 +92,30 @@ to shift-up
     [ ask pieces [ set ycor ycor + 1 ] ]
 end
 
+to draw-obstacle
+
+end
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Runtime Procedures ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
-to Start
-  print finish?
-  if finish? [user-message "Over!" stop ]
-  every (0.05)
-    [ if (not finish?)
-        [ ask pieces [find-goal] ]
+to draw
+  if mouse-down?
+    [ask patch mouse-xcor mouse-ycor [set pcolor red]]
+  display
+end
+
+to delete
+  if mouse-down?
+    [ask patch mouse-xcor mouse-ycor [set pcolor black]]
+  display
+end
+
+to go
+  if finish? [user-message "Finish!" stop ]
+    every (0.05)
+      [ if (not finish?)
+          [ ask pieces [find-goal] ]
     ]
   display
 end
@@ -135,9 +152,8 @@ end
 
 to new-piece
   let new-shape random 7
-  ask turtle 0 [ setxy 15 7 ]
+  ask turtle 0 [ setxy random 21 random 11 ]
   ask pieces [ setup-piece new-shape ]
-
 end
 
 to setup-piece [s]  ;; Piece Procedure
@@ -153,7 +169,6 @@ to setup-piece [s]  ;; Piece Procedure
 end
 
 to find-goal
-
   shift-left
   shift-down
 end
@@ -255,10 +270,10 @@ ticks
 30.0
 
 BUTTON
-230
-151
-301
-184
+211
+208
+344
+241
 Initiate
 Initiate
 NIL
@@ -340,12 +355,12 @@ NIL
 0
 
 BUTTON
-230
-198
-301
-231
-Start
-Start
+210
+250
+345
+283
+Draw Obstacle
+draw
 T
 1
 T
@@ -386,6 +401,40 @@ T
 OBSERVER
 NIL
 W
+NIL
+NIL
+1
+
+BUTTON
+213
+330
+345
+363
+Go!
+Go
+T
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+211
+291
+346
+324
+Delete Obstacle
+delete
+T
+1
+T
+OBSERVER
+NIL
+NIL
 NIL
 NIL
 1
