@@ -184,7 +184,7 @@ to setup-robot
   let pos-x random-pos-x
   let pos-y random-pos-y
   ask robot 0 [ setxy pos-x pos-y]
-  ask robots [ setup-part 1 new-shape set heading 180 ]
+  ask robots [ setup-part 1 1 ]
 
   create-robots2 num-of-parts
   set new-shape random 7
@@ -196,7 +196,7 @@ to setup-robot
         set pos-y random-pos-y]
   ]
   ask robotB 4 [ setxy pos-x pos-y ]
-  ask robots2 [ setup-part 2 new-shape set heading 180 ]
+  ask robots2 [ setup-part 2 1 ]
 
   create-robots3 num-of-parts
   set new-shape random 7
@@ -208,7 +208,7 @@ to setup-robot
         set pos-y random-pos-y]
   ]
   ask robotC 8 [ setxy pos-x pos-y ]
-  ask robots3 [ setup-part 3 new-shape set heading 180 ]
+  ask robots3 [ setup-part 3 1 ]
 
   create-robots4 num-of-parts
   set new-shape random 7
@@ -220,12 +220,12 @@ to setup-robot
         set pos-y random-pos-y]
   ]
   ask robotD 12 [ setxy pos-x pos-y ]
-  ask robots4 [ setup-part 4 new-shape set heading 180 ]
+  ask robots4 [ setup-part 4 1 ]
 end
 
 to setup-part [n s]  ;; n is which robot (1,2,3) and s is a shape
   if (s = 0) [ setup-o n set color blue   ]
-  if (s = 1) [ setup-l n  set color red    ]
+  if (s = 1) [ setup-l n  set color one-of [ red green blue yellow ]  ]
   if (s = 2) [ setup-j n set color yellow ]
   if (s = 3) [ setup-t n set color green  ]
   if (s = 4) [ setup-s n set color orange ]
@@ -241,7 +241,8 @@ end
 to find-goal
   if (not finish_1?)
     [ shift-left 1
-      shift-down 1 ]
+      shift-down 1
+      rotate-me-right ]
 
   if (not finish_2?)
     [ shift-left 2
@@ -362,7 +363,7 @@ GRAPHICS-WINDOW
 1
 0
 ticks
-30.0
+1.0
 
 BUTTON
 28
