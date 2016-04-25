@@ -183,7 +183,6 @@ end
 
 to setup-robot
   create-robots num-of-parts
-  let new-shape random 7
   let pos-x random-pos-x
   let pos-y random-pos-y
   ask robot 0 [ setxy pos-x pos-y]
@@ -191,7 +190,6 @@ to setup-robot
   ask robots [ setup-part 1 robotColor ]
 
   create-robots2 num-of-parts
-  set new-shape random 7
   set pos-x random-pos-x
   set pos-y random-pos-y
   ask patches [
@@ -204,7 +202,6 @@ to setup-robot
   ask robots2 [ setup-part 2 robotColor1 ]
 
   create-robots3 num-of-parts
-  set new-shape random 7
   set pos-x random-pos-x
   set pos-y random-pos-y
   ask patches [
@@ -217,7 +214,6 @@ to setup-robot
   ask robots3 [ setup-part 3 robotColor2 ]
 
   create-robots4 num-of-parts
-  set new-shape random 7
   set pos-x random-pos-x
   set pos-y random-pos-y
   ask patches [
@@ -271,16 +267,6 @@ end
 ;; The numbers 0123 show the relative positions of turtles
 ;; 0, 1, 2, and 3 within the overall shape.
 
-;; O-Block
-;; 01
-;; 23
-to setup-o [n] ;;Piece Procedure
-  if (who = 1 + (n * num-of-parts - num-of-parts)) [ set x 1 set y  0 ]
-  if (who = 2 + (n * num-of-parts - num-of-parts)) [ set x 0 set y -1 ]
-  if (who = 3 + (n * num-of-parts - num-of-parts)) [ set x 1 set y -1 ]
-end
-
-;;------------------------------------
 ;; L-Block
 ;; 201
 ;; 3
@@ -289,60 +275,6 @@ to setup-l [n]  ;;Piece Procedure
   if (who = 2 + (n * num-of-parts - num-of-parts)) [ set x -1 set y  0 ]
   if (who = 3 + (n * num-of-parts - num-of-parts)) [ set x -1 set y -1 ]
   if (who = 4 + (n * num-of-parts - num-of-parts)) [ set x -1 set y -1 ]
-end
-
-;;------------------------------------
-;; J-Block
-;; 102
-;;   3
-to setup-j [n]  ;;Piece Procedure
-  if (who = 1 + (n * num-of-parts - num-of-parts)) [ set x -1 set y  0 ]
-  if (who = 2 + (n * num-of-parts - num-of-parts)) [ set x  1 set y  0 ]
-  if (who = 3 + (n * num-of-parts - num-of-parts)) [ set x  1 set y -1 ]
-  if (who = 4 + (n * num-of-parts - num-of-parts)) [ set x  1 set y -1 ]
-end
-
-;;------------------------------------
-;; T-Block
-;; 201
-;;  3
-to setup-t [n]  ;;Piece Procedure
-  if (who = 1 + (n * num-of-parts - num-of-parts)) [ set x  1 set y  0 ]
-  if (who = 2 + (n * num-of-parts - num-of-parts)) [ set x -1 set y  0 ]
-  if (who = 3 + (n * num-of-parts - num-of-parts)) [ set x  0 set y -1 ]
-  if (who = 4 + (n * num-of-parts - num-of-parts)) [ set x  0 set y -1 ]
-end
-
-;;------------------------------------
-;; S-Block
-;;  01
-;; 23
-to setup-s [n]  ;;Piece Procedure
-  if (who = 1 + (n * num-of-parts - num-of-parts)) [ set x  1 set y  0 ]
-  if (who = 2 + (n * num-of-parts - num-of-parts)) [ set x -1 set y -1 ]
-  if (who = 3 + (n * num-of-parts - num-of-parts)) [ set x  0 set y -1 ]
-  if (who = 4 + (n * num-of-parts - num-of-parts)) [ set x  0 set y -1 ]
-end
-
-;;------------------------------------
-;; Z-block
-;; 10
-;;  32
-to setup-z [n]  ;;Piece Procedure
-  if (who = 1 + (n * num-of-parts - num-of-parts)) [ set x -1 set y  0 ]
-  if (who = 2 + (n * num-of-parts - num-of-parts)) [ set x  1 set y -1 ]
-  if (who = 3 + (n * num-of-parts - num-of-parts)) [ set x  0 set y -1 ]
-  if (who = 4 + (n * num-of-parts - num-of-parts)) [ set x  0 set y -1 ]
-end
-
-;;------------------------------------
-;; I-Block
-;; 1023
-to setup-i [n] ;;Piece Procedure
-  if (who = 1 + (n * num-of-parts - num-of-parts)) [ set x -1 set y 0 ]
-  if (who = 2 + (n * num-of-parts - num-of-parts)) [ set x  1 set y 0 ]
-  if (who = 3 + (n * num-of-parts - num-of-parts)) [ set x  2 set y 0 ]
-  if (who = 4 + (n * num-of-parts - num-of-parts)) [ set x  2 set y 0 ]
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
