@@ -184,7 +184,8 @@ to setup-robot
   let pos-x random-pos-x
   let pos-y random-pos-y
   ask robot 0 [ setxy pos-x pos-y]
-  ask robots [ setup-part 1 1 ]
+  let robotColor 0 + random 2
+  ask robots [ setup-part 1 robotColor ]
 
   create-robots2 num-of-parts
   set new-shape random 7
@@ -196,7 +197,8 @@ to setup-robot
         set pos-y random-pos-y]
   ]
   ask robotB 4 [ setxy pos-x pos-y ]
-  ask robots2 [ setup-part 2 1 ]
+  let robotColor1 2 + random 2
+  ask robots2 [ setup-part 2 robotColor1 ]
 
   create-robots3 num-of-parts
   set new-shape random 7
@@ -208,7 +210,8 @@ to setup-robot
         set pos-y random-pos-y]
   ]
   ask robotC 8 [ setxy pos-x pos-y ]
-  ask robots3 [ setup-part 3 1 ]
+  let robotColor2 4 + random 2
+  ask robots3 [ setup-part 3 robotColor2 ]
 
   create-robots4 num-of-parts
   set new-shape random 7
@@ -220,17 +223,19 @@ to setup-robot
         set pos-y random-pos-y]
   ]
   ask robotD 12 [ setxy pos-x pos-y ]
-  ask robots4 [ setup-part 4 1 ]
+  let robotColor3 6 + random 2
+  ask robots4 [ setup-part 4 robotColor3 ]
 end
 
-to setup-part [n s]  ;; n is which robot (1,2,3) and s is a shape
-  if (s = 0) [ setup-o n set color blue   ]
-  if (s = 1) [ setup-l n  set color one-of [ red green blue yellow ]  ]
-  if (s = 2) [ setup-j n set color yellow ]
-  if (s = 3) [ setup-t n set color green  ]
-  if (s = 4) [ setup-s n set color orange ]
-  if (s = 5) [ setup-z n set color sky    ]
-  if (s = 6) [ setup-i n set color violet ]
+to setup-part [n s]  ;; n is which robot (1,2,3), s is a shape
+  if (s = 0) [ setup-l n set color blue   ]
+  if (s = 1) [ setup-l n set color red    ]
+  if (s = 2) [ setup-l n set color yellow ]
+  if (s = 3) [ setup-l n set color green  ]
+  if (s = 4) [ setup-l n set color orange ]
+  if (s = 5) [ setup-l n set color brown    ]
+  if (s = 6) [ setup-l n set color violet ]
+  if (s = 7) [ setup-l n set color magenta ]
 
   if (n = 1) [ setxy [xcor] of robot 0 + x [ycor] of robot 0 + y ]
   if (n = 2) [ setxy [xcor] of robotB 4 + x [ycor] of robotB 4 + y ]
