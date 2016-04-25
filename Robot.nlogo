@@ -47,8 +47,8 @@ end
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Interface Buttons ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;
-to rotate-right
-  if rotate-right-clear? and not finish_1? and not finish_2? and not finish_3? and not finish_4?
+to rotate-right [n] ;; n indicates which robot (1,2,3,4)
+  if rotate-right-clear? n and not finish_1? and not finish_2? and not finish_3? and not finish_4?
     [ ask robots [ rotate-me-right ] ]
 end
 
@@ -61,8 +61,8 @@ to rotate-me-right  ;; Piece Procedure
   set ycor ([ycor] of turtle 0) + y
 end
 
-to rotate-left
-  if rotate-left-clear? and not finish_1? and not finish_2? and not finish_3? and not finish_4?
+to rotate-left [n] ;; n indicates which robot (1,2,3,4)
+  if rotate-left-clear? n and not finish_1? and not finish_2? and not finish_3? and not finish_4?
     [ ask robots [ rotate-me-left ] ]
 end
 
@@ -142,9 +142,12 @@ end
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Overlap prevention Reporters ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-to-report clear? [p]  ;; p is a patch
-  if p = nobody [ report false]
-  report ([pcolor] of p = black)
+to-report clear? [p n]  ;; p is a patch, n indicates which robot (1,2,3,4)
+  if p = nobody [ report false ]
+  if (n = 1) [ report ([pcolor] of p = black) and (not any? robots2-on p) and (not any? robots3-on p) and (not any? robots4-on p) ]
+  if (n = 2) [ report ([pcolor] of p = black) and (not any? robots-on p) and (not any? robots3-on p) and (not any? robots4-on p) ]
+  if (n = 3) [ report ([pcolor] of p = black) and (not any? robots2-on p) and (not any? robots-on p) and (not any? robots4-on p) ]
+  if (n = 4) [ report ([pcolor] of p = black) and (not any? robots2-on p) and (not any? robots3-on p) and (not any? robots-on p) ]
 end
 
 to-report is-finish? [p]
@@ -152,18 +155,18 @@ to-report is-finish? [p]
 end
 
 to-report clear-at? [n xoff yoff]
-  if n = 1 [report all? robots [clear? patch-at xoff yoff]]
-  if n = 2 [report all? robots2 [clear? patch-at xoff yoff]]
-  if n = 3 [report all? robots3 [clear? patch-at xoff yoff]]
-  if n = 4 [report all? robots4 [clear? patch-at xoff yoff]]
+  if n = 1 [report all? robots [clear? patch-at xoff yoff n]]
+  if n = 2 [report all? robots2 [clear? patch-at xoff yoff n]]
+  if n = 3 [report all? robots3 [clear? patch-at xoff yoff n]]
+  if n = 4 [report all? robots4 [clear? patch-at xoff yoff n]]
 end
 
-to-report rotate-left-clear?
-  report all? robots [clear? patch-at (- y) x]
+to-report rotate-left-clear? [n] ;; n indicates which robot (1,2,3,4)
+  report all? robots [clear? patch-at (- y) x n]
 end
 
-to-report rotate-right-clear?
-  report all? robots [clear? patch-at y (- x)]
+to-report rotate-right-clear? [n] ;; n indicates which robot (1,2,3,4)
+  report all? robots [clear? patch-at y (- x) n]
 end
 
 to-report random-pos-x
@@ -192,7 +195,7 @@ to setup-robot
   set pos-x random-pos-x
   set pos-y random-pos-y
   ask patches [
-    while [not (clear? patch-at pos-x pos-y)]
+    while [not (clear? patch-at pos-x pos-y 2)]
       [ set pos-x random-pos-x
         set pos-y random-pos-y]
   ]
@@ -205,7 +208,7 @@ to setup-robot
   set pos-x random-pos-x
   set pos-y random-pos-y
   ask patches [
-    while [not (clear? patch-at pos-x pos-y)]
+    while [not (clear? patch-at pos-x pos-y 3)]
       [ set pos-x random-pos-x
         set pos-y random-pos-y]
   ]
@@ -218,7 +221,7 @@ to setup-robot
   set pos-x random-pos-x
   set pos-y random-pos-y
   ask patches [
-    while [not (clear? patch-at pos-x pos-y)]
+    while [not (clear? patch-at pos-x pos-y 4)]
       [ set pos-x random-pos-x
         set pos-y random-pos-y]
   ]
