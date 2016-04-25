@@ -108,7 +108,7 @@ end
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 to draw
   if mouse-down?
-    [ask patch mouse-xcor mouse-ycor [set pcolor red]]
+    [ask patch mouse-xcor mouse-ycor [set pcolor white]]
   display
 end
 
@@ -120,7 +120,7 @@ end
 
 to draw-goal
   if mouse-down?
-    [ ask patch mouse-xcor mouse-ycor [set pcolor white]
+    [ ask patch mouse-xcor mouse-ycor [set pcolor red]
       set goals_x mouse-xcor;
       set goals_y mouse-ycor;
 
@@ -148,7 +148,7 @@ to-report clear? [p]  ;; p is a patch
 end
 
 to-report is-finish? [p]
-  report ([pcolor] of p = white)
+  report ([pcolor] of p = red)
 end
 
 to-report clear-at? [n xoff yoff]
@@ -246,8 +246,7 @@ end
 to find-goal
   if (not finish_1?)
     [ shift-left 1
-      shift-down 1
-      rotate-me-right ]
+      shift-down 1 ]
 
   if (not finish_2?)
     [ shift-left 2
@@ -368,7 +367,7 @@ GRAPHICS-WINDOW
 1
 0
 ticks
-1.0
+30.0
 
 BUTTON
 28
