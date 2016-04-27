@@ -254,7 +254,7 @@ to setup-robot
   let pos-x random-pos-x
   let pos-y random-pos-y
   ask robot 0 [ setxy pos-x pos-y]
-  let robotColor 0
+  let robotColor 0 + random 2
   ask robots [ setup-part 1 robotColor ]
 
   create-robots2 num-of-parts
@@ -266,7 +266,7 @@ to setup-robot
         set pos-y random-pos-y]
   ]
   ask robotB 4 [ setxy pos-x pos-y ]
-  let robotColor1 2
+  let robotColor1 2 + random 2
   ask robots2 [ setup-part 2 robotColor1 ]
 
   create-robots3 num-of-parts
@@ -278,7 +278,7 @@ to setup-robot
         set pos-y random-pos-y]
   ]
   ask robotC 8 [ setxy pos-x pos-y ]
-  let robotColor2 4
+  let robotColor2 4 + random 2
   ask robots3 [ setup-part 3 robotColor2 ]
 
   create-robots4 num-of-parts
@@ -290,7 +290,7 @@ to setup-robot
         set pos-y random-pos-y]
   ]
   ask robotD 12 [ setxy pos-x pos-y ]
-  let robotColor3 6
+  let robotColor3 6 + random 2
   ask robots4 [ setup-part 4 robotColor3 ]
 end
 
