@@ -300,29 +300,24 @@ end
 
 to do-flood-fill
   if (not is-computed?) [
-    print center-to-edge-y goal_y
-    print center-to-edge-x goal_x
-    matrix:set map-mx (center-to-edge-y goal_y) (center-to-edge-x goal_x) 0
+
+
     set is-computed? true
   ]
 end
 
 to set-obstacle-and-goal
-  let obs-x array:from-list ([pxcor] of patches with [pcolor = white])
-  let obs-y array:from-list ([pycor] of patches with [pcolor = white])
-  let i 0
+  let set-goal (patches with [pcolor = red])
+  let set-obs (patches with [pcolor = white])
 
-  print array:length obs-x
-  print array:length obs-y
+  ask set-obs [
+    set plabel 999
+    set plabel-color red
+  ]
 
-  while [i < (array:length obs-x) ]
-  [
-    ;print array:item obs-x i
-    ;print array:item obs-y i
-    print i
-    print "-----------------"
-    matrix:set map-mx (center-to-edge-y (array:item obs-y i)) (center-to-edge-x (array:item obs-x i)) 999
-    set i (i + 1)
+  ask set-goal [
+    set plabel 0
+    set plabel-color white
   ]
 
 end
