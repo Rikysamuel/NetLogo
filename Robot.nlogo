@@ -1,17 +1,21 @@
+extensions [ array matrix ]
+
 breed [ robots robot ]
 breed [ robots2 robotB ]
 breed [ robots3 robotC ]
 breed [ robots4 robotD ]
 
 globals [
-  goals_x
-  goals_y
+  goal_x
+  goal_y
   finish_1?
   finish_2?
   finish_3?
   finish_4?
   draw?
   num-of-parts
+  map-mx
+  is-computed?
 ]
 
 turtles-own [
@@ -30,12 +34,15 @@ to Initiate
   set finish_4? false
   set draw? false
   set num-of-parts 4
+  set is-computed? false
 
   ;; draw the board
   ask patches
   [ if (pxcor = min-pxcor) or (pxcor > 21) or (pycor = min-pycor) or (pycor = max-pycor)
     [ set pcolor gray ]
   ]
+
+  init-matrix
 
   reset-ticks
 end
@@ -108,7 +115,11 @@ end
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 to draw
   if mouse-down?
-    [ask patch mouse-xcor mouse-ycor [set pcolor white]]
+    [
+      ask patch mouse-xcor mouse-ycor [set pcolor white]
+      ;ask patches
+      ;matrix:set map-mx (center-to-edge-y mouse-ycor) (center-to-edge-x mouse-xcor) 999
+    ]
   display
 end
 
@@ -121,11 +132,9 @@ end
 to draw-goal
   if mouse-down?
     [ ask patch mouse-xcor mouse-ycor [set pcolor red]
-      set goals_x mouse-xcor;
-      set goals_y mouse-ycor;
+      set goal_x round mouse-xcor;
+      set goal_y round mouse-ycor;
 
-      ask patches
-        [ if (pxcor = goals_x) and (pycor = goals_y) [ set pcolor white ]]
       display
      ]
 end
@@ -177,6 +186,14 @@ to-report random-pos-y
   report (random ((max-pycor - 3) - (min-pycor + 3)) + (min-pycor + 3))
 end
 
+to-report center-to-edge-x [val]
+  report (val + max-pxcor - 1)
+end
+
+to-report center-to-edge-y [val]
+  report (max-pycor - val - 1)
+end
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; robots Procedures ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -186,7 +203,7 @@ to setup-robot
   let pos-x random-pos-x
   let pos-y random-pos-y
   ask robot 0 [ setxy pos-x pos-y]
-  let robotColor 0 + random 2
+  let robotColor 0
   ask robots [ setup-part 1 robotColor ]
 
   create-robots2 num-of-parts
@@ -198,7 +215,7 @@ to setup-robot
         set pos-y random-pos-y]
   ]
   ask robotB 4 [ setxy pos-x pos-y ]
-  let robotColor1 2 + random 2
+  let robotColor1 2
   ask robots2 [ setup-part 2 robotColor1 ]
 
   create-robots3 num-of-parts
@@ -210,7 +227,7 @@ to setup-robot
         set pos-y random-pos-y]
   ]
   ask robotC 8 [ setxy pos-x pos-y ]
-  let robotColor2 4 + random 2
+  let robotColor2 4
   ask robots3 [ setup-part 3 robotColor2 ]
 
   create-robots4 num-of-parts
@@ -222,7 +239,7 @@ to setup-robot
         set pos-y random-pos-y]
   ]
   ask robotD 12 [ setxy pos-x pos-y ]
-  let robotColor3 6 + random 2
+  let robotColor3 6
   ask robots4 [ setup-part 4 robotColor3 ]
 end
 
@@ -275,6 +292,39 @@ to setup-l [n]  ;;Piece Procedure
   if (who = 2 + (n * num-of-parts - num-of-parts)) [ set x -1 set y  0 ]
   if (who = 3 + (n * num-of-parts - num-of-parts)) [ set x -1 set y -1 ]
   if (who = 4 + (n * num-of-parts - num-of-parts)) [ set x -1 set y -1 ]
+end
+
+to init-matrix
+  set map-mx matrix:make-constant (2 * max-pycor - 2) (2 * max-pxcor - 2) 0
+end
+
+to do-flood-fill
+  if (not is-computed?) [
+    print center-to-edge-y goal_y
+    print center-to-edge-x goal_x
+    matrix:set map-mx (center-to-edge-y goal_y) (center-to-edge-x goal_x) 0
+    set is-computed? true
+  ]
+end
+
+to set-obstacle-and-goal
+  let obs-x array:from-list ([pxcor] of patches with [pcolor = white])
+  let obs-y array:from-list ([pycor] of patches with [pcolor = white])
+  let i 0
+
+  print array:length obs-x
+  print array:length obs-y
+
+  while [i < (array:length obs-x) ]
+  [
+    ;print array:item obs-x i
+    ;print array:item obs-y i
+    print i
+    print "-----------------"
+    matrix:set map-mx (center-to-edge-y (array:item obs-y i)) (center-to-edge-x (array:item obs-x i)) 999
+    set i (i + 1)
+  ]
+
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
