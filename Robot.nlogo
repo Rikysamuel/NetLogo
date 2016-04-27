@@ -106,53 +106,144 @@ to shift-right [n]
 
 end
 
+to-report shift-left-clear? [n]
+  let move-clear? false
+
+  if (n = 1) and (clear-at? 1 -1 0) and not finish_1? [ set move-clear? true ]
+  if (n = 2) and (clear-at? 2 -1 0) and not finish_2? [ set move-clear? true ]
+  if (n = 3) and (clear-at? 3 -1 0) and not finish_3? [ set move-clear? true ]
+  if (n = 4) and (clear-at? 4 -1 0) and not finish_4? [ set move-clear? true ]
+
+  report move-clear?
+end
+
 to shift-left [n]
-  if (n = 1) and (clear-at? 1 -1 0) and not finish_1? [ ask robots [ set xcor xcor - 1 ] ]
-  if (n = 2) and (clear-at? 2 -1 0) and not finish_2? [ ask robots2 [ set xcor xcor - 1 ] ]
-  if (n = 3) and (clear-at? 3 -1 0) and not finish_3? [ ask robots3 [ set xcor xcor - 1 ] ]
-  if (n = 4) and (clear-at? 4 -1 0) and not finish_4? [ ask robots4 [ set xcor xcor - 1 ] ]
+  if shift-left-clear? n [
+    if (n = 1) [ ask robots [ set xcor xcor - 1 ] ]
+    if (n = 2) [ ask robots2 [ set xcor xcor - 1 ] ]
+    if (n = 3) [ ask robots3 [ set xcor xcor - 1 ] ]
+    if (n = 4) [ ask robots4 [ set xcor xcor - 1 ] ]
+  ]
+end
+
+to-report shift-down-clear? [n]
+  let move-clear? false
+
+  if (n = 1) and (clear-at? 1 0 -1) and not finish_1? [ set move-clear? true ]
+  if (n = 2) and (clear-at? 2 0 -1) and not finish_2? [ set move-clear? true ]
+  if (n = 3) and (clear-at? 3 0 -1) and not finish_3? [ set move-clear? true ]
+  if (n = 4) and (clear-at? 4 0 -1) and not finish_3? [ set move-clear? true ]
+
+  report move-clear?
 end
 
 to shift-down [n]
-  if (n = 1) and (clear-at? 1 0 -1) and not finish_1? [ ask robots [ set ycor ycor - 1 ] ]
-  if (n = 2) and (clear-at? 2 0 -1) and not finish_2? [ ask robots2 [ set ycor ycor - 1 ] ]
-  if (n = 3) and (clear-at? 3 0 -1) and not finish_3? [ ask robots3 [ set ycor ycor - 1 ] ]
-  if (n = 4) and (clear-at? 4 0 -1) and not finish_3? [ ask robots4 [ set ycor ycor - 1 ] ]
+  if shift-down-clear? n [
+    if (n = 1) [ ask robots [ set ycor ycor - 1 ] ]
+    if (n = 2) [ ask robots2 [ set ycor ycor - 1 ] ]
+    if (n = 3) [ ask robots3 [ set ycor ycor - 1 ] ]
+    if (n = 4) [ ask robots4 [ set ycor ycor - 1 ] ]
+  ]
+end
+
+to-report shift-up-clear? [n]
+  let move-clear? false
+
+  if (n = 1) and (clear-at? 1 0 1) and not finish_1? [ set move-clear? true ]
+  if (n = 2) and (clear-at? 2 0 1) and not finish_2? [ set move-clear? true ]
+  if (n = 3) and (clear-at? 3 0 1) and not finish_3? [ set move-clear? true ]
+  if (n = 4) and (clear-at? 4 0 1) and not finish_4? [ set move-clear? true ]
+
+  report move-clear?
 end
 
 to shift-up [n]
-  if (n = 1) and (clear-at? 1 0 1) and not finish_1? [ ask robots [ set ycor ycor + 1 ] ]
-  if (n = 2) and (clear-at? 2 0 1) and not finish_2? [ ask robots2 [ set ycor ycor + 1 ] ]
-  if (n = 3) and (clear-at? 3 0 1) and not finish_3? [ ask robots3 [ set ycor ycor + 1 ] ]
-  if (n = 4) and (clear-at? 4 0 1) and not finish_4? [ ask robots4 [ set ycor ycor + 1 ] ]
+  if shift-up-clear? n [
+    if (n = 1) [ ask robots [ set ycor ycor + 1 ] ]
+    if (n = 2) [ ask robots2 [ set ycor ycor + 1 ] ]
+    if (n = 3) [ ask robots3 [ set ycor ycor + 1 ] ]
+    if (n = 4) [ ask robots4 [ set ycor ycor + 1 ] ]
+  ]
+end
+
+to-report shift-upright-clear? [n]
+  let move-clear? false
+
+  if (n = 1) and (clear-at? 1 0 1) and (clear-at? 1 1 0) and not finish_1? [ set move-clear? true ]
+  if (n = 2) and (clear-at? 2 0 1) and (clear-at? 2 1 0) and not finish_2? [ set move-clear? true ]
+  if (n = 3) and (clear-at? 3 0 1) and (clear-at? 3 1 0) and not finish_3? [ set move-clear? true ]
+  if (n = 4) and (clear-at? 4 0 1) and (clear-at? 4 1 0) and not finish_4? [ set move-clear? true ]
+
+  report move-clear?
 end
 
 to shift-upright [n]
-  if (n = 1) and (clear-at? 1 0 1) and (clear-at? 1 1 0) and not finish_1? [ ask robots [ set ycor ycor + 1  set xcor xcor + 1 ] ]
-  if (n = 2) and (clear-at? 2 0 1) and (clear-at? 2 1 0) and not finish_2? [ ask robots2 [ set ycor ycor + 1  set xcor xcor + 1 ] ]
-  if (n = 3) and (clear-at? 3 0 1) and (clear-at? 3 1 0) and not finish_3? [ ask robots3 [ set ycor ycor + 1 set xcor xcor + 1 ] ]
-  if (n = 4) and (clear-at? 4 0 1) and (clear-at? 4 1 0) and not finish_4? [ ask robots4 [ set ycor ycor + 1 set xcor xcor + 1 ] ]
+  if shift-upright-clear? n [
+    if (n = 1) [ ask robots [ set ycor ycor + 1  set xcor xcor + 1 ] ]
+    if (n = 2) [ ask robots2 [ set ycor ycor + 1  set xcor xcor + 1 ] ]
+    if (n = 3) [ ask robots3 [ set ycor ycor + 1 set xcor xcor + 1 ] ]
+    if (n = 4) [ ask robots4 [ set ycor ycor + 1 set xcor xcor + 1 ] ]
+  ]
+end
+
+to-report shift-upleft-clear? [n]
+  let move-clear? false
+
+  if (n = 1) and (clear-at? 1 0 1) and (clear-at? 1 -1 0) and not finish_1? [ set move-clear? true ]
+  if (n = 2) and (clear-at? 2 0 1) and (clear-at? 2 -1 0) and not finish_2? [ set move-clear? true ]
+  if (n = 3) and (clear-at? 3 0 1) and (clear-at? 3 -1 0) and not finish_3? [ set move-clear? true ]
+  if (n = 4) and (clear-at? 4 0 1) and (clear-at? 4 -1 0) and not finish_4? [ set move-clear? true ]
+
+  report move-clear?
 end
 
 to shift-upleft [n]
-  if (n = 1) and (clear-at? 1 0 1) and (clear-at? 1 -1 0) and not finish_1? [ ask robots [ set ycor ycor + 1  set xcor xcor - 1 ] ]
-  if (n = 2) and (clear-at? 2 0 1) and (clear-at? 2 -1 0) and not finish_2? [ ask robots2 [ set ycor ycor + 1  set xcor xcor - 1 ] ]
-  if (n = 3) and (clear-at? 3 0 1) and (clear-at? 3 -1 0) and not finish_3? [ ask robots3 [ set ycor ycor + 1 set xcor xcor - 1 ] ]
-  if (n = 4) and (clear-at? 4 0 1) and (clear-at? 4 -1 0) and not finish_4? [ ask robots4 [ set ycor ycor + 1 set xcor xcor - 1 ] ]
+  if shift-upleft-clear? n [
+    if (n = 1) [ ask robots [ set ycor ycor + 1  set xcor xcor - 1 ] ]
+    if (n = 2) [ ask robots2 [ set ycor ycor + 1  set xcor xcor - 1 ] ]
+    if (n = 3) [ ask robots3 [ set ycor ycor + 1 set xcor xcor - 1 ] ]
+    if (n = 4) [ ask robots4 [ set ycor ycor + 1 set xcor xcor - 1 ] ]
+  ]
+end
+
+to-report shift-downright-clear? [n]
+  let move-clear? false
+
+  if (n = 1) and (clear-at? 1 0 -1) and (clear-at? 1 1 0) and not finish_1? [ set move-clear? true ]
+  if (n = 2) and (clear-at? 2 0 -1) and (clear-at? 2 1 0) and not finish_2? [ set move-clear? true ]
+  if (n = 3) and (clear-at? 3 0 -1) and (clear-at? 3 1 0) and not finish_3? [ set move-clear? true ]
+  if (n = 4) and (clear-at? 4 0 -1) and (clear-at? 4 1 0) and not finish_4? [ set move-clear? true ]
+
+  report move-clear?
 end
 
 to shift-downright [n]
-  if (n = 1) and (clear-at? 1 0 -1) and (clear-at? 1 1 0) and not finish_1? [ ask robots [ set ycor ycor - 1  set xcor xcor + 1 ] ]
-  if (n = 2) and (clear-at? 2 0 -1) and (clear-at? 2 1 0) and not finish_2? [ ask robots2 [ set ycor ycor - 1  set xcor xcor + 1 ] ]
-  if (n = 3) and (clear-at? 3 0 -1) and (clear-at? 3 1 0) and not finish_3? [ ask robots3 [ set ycor ycor - 1 set xcor xcor + 1 ] ]
-  if (n = 4) and (clear-at? 4 0 -1) and (clear-at? 4 1 0) and not finish_4? [ ask robots4 [ set ycor ycor - 1 set xcor xcor + 1 ] ]
+  if shift-downright-clear? n [
+  if (n = 1) [ ask robots [ set ycor ycor - 1  set xcor xcor + 1 ] ]
+  if (n = 2) [ ask robots2 [ set ycor ycor - 1  set xcor xcor + 1 ] ]
+  if (n = 3) [ ask robots3 [ set ycor ycor - 1 set xcor xcor + 1 ] ]
+  if (n = 4) [ ask robots4 [ set ycor ycor - 1 set xcor xcor + 1 ] ]
+  ]
+end
+
+to-report shift-downleft-clear? [n]
+  let move-clear? false
+
+  if (n = 1) and (clear-at? 1 0 -1) and (clear-at? 1 -1 0) and not finish_1? [ set move-clear? true ]
+  if (n = 2) and (clear-at? 2 0 -1) and (clear-at? 2 -1 0) and not finish_2? [ set move-clear? true ]
+  if (n = 3) and (clear-at? 3 0 -1) and (clear-at? 3 -1 0) and not finish_3? [ set move-clear? true ]
+  if (n = 4) and (clear-at? 4 0 -1) and (clear-at? 4 -1 0) and not finish_4? [ set move-clear? true ]
+
+  report move-clear?
 end
 
 to shift-downleft [n]
-  if (n = 1) and (clear-at? 1 0 -1) and (clear-at? 1 -1 0) and not finish_1? [ ask robots [ set ycor ycor - 1  set xcor xcor - 1 ] ]
-  if (n = 2) and (clear-at? 2 0 -1) and (clear-at? 2 -1 0) and not finish_2? [ ask robots2 [ set ycor ycor - 1  set xcor xcor - 1 ] ]
-  if (n = 3) and (clear-at? 3 0 -1) and (clear-at? 3 -1 0) and not finish_3? [ ask robots3 [ set ycor ycor - 1 set xcor xcor - 1 ] ]
-  if (n = 4) and (clear-at? 4 0 -1) and (clear-at? 4 -1 0) and not finish_4? [ ask robots4 [ set ycor ycor - 1 set xcor xcor - 1 ] ]
+  if shift-downleft-clear? n [
+    if (n = 1) [ ask robots [ set ycor ycor - 1  set xcor xcor - 1 ] ]
+    if (n = 2) [ ask robots2 [ set ycor ycor - 1  set xcor xcor - 1 ] ]
+    if (n = 3) [ ask robots3 [ set ycor ycor - 1 set xcor xcor - 1 ] ]
+    if (n = 4) [ ask robots4 [ set ycor ycor - 1 set xcor xcor - 1 ] ]
+  ]
 end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -186,7 +277,7 @@ end
 
 to go
   if finish_1? and finish_2? and finish_3? [user-message "Finish!" stop ]
-  every (0.5)
+  every (0.05)
     [ if (not finish_1? or not finish_2? or not finish_3?)
         [ ask robots [find-goal] ]
   ]
@@ -260,6 +351,13 @@ to-report is-clear? [p]
     [ report false ]
 end
 
+to-report is-move-clear? [p]
+  let str [ plabel ] of p
+  ifelse ( [ pcolor ] of p != gray ) and ( [ pcolor ] of p != white )
+    [ report true ]
+    [ report false ]
+end
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; robots Procedures ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -326,24 +424,44 @@ to setup-part [n s]  ;; n is which robot (1,2,3), s is a shape
 end
 
 to find-goal
+  set-obstacle-and-goal
+  do-flood-fill
   if (not finish_1?) [
-    if shift-right-clear? 1
-    [
-      shift-right 1
-    ]
+    move 1
+;    if shift-left-clear? 1 [
+;      shift-left 1
+;    ]
   ]
 
-  if (not finish_2?)
-    [ shift-left 2
-      shift-down 2 ]
+  if (not finish_2?) [
+    move 2
+;    shift-left 2
+;    shift-down 2
 
-  if (not finish_3?)
-    [ shift-left 3
-      shift-down 3 ]
+;    if shift-upleft-clear? 2 [
+;      shift-upleft 2
+;    ]
+  ]
 
-    if (not finish_4?)
-    [ shift-left 4
-      shift-down 4 ]
+  if (not finish_3?) [
+    move 3
+;    shift-left 3
+;    shift-down 3
+
+;    if shift-downright-clear? 3 [
+;      shift-up 3
+;    ]
+  ]
+
+    if (not finish_4?) [
+      move 4
+;      shift-left 4
+;      shift-down 4
+
+;      if shift-downleft-clear? 4 [
+;        shift-down 4
+;      ]
+    ]
 end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -422,6 +540,70 @@ to set-obstacle-and-goal
   ]
 
 end
+
+to move [n] ; n indicates which robot (1 2 3 4)
+  print "masuk moveee"
+  let cur-plabel [ plabel ] of turtle ((n - 1) * 4)
+  let cur-x [ xcor ] of turtle ((n - 1) * 4)
+  let cur-y [ ycor ] of turtle ((n - 1) * 4)
+  let is-moved? false
+
+  print "current plabel"
+  print cur-plabel
+
+  print [plabel] of patch (cur-x - 1) (cur-y + 1)
+  print [plabel] of patch (cur-x) (cur-y + 1)
+  print [plabel] of patch (cur-x + 1) (cur-y + 1)
+  print [plabel] of patch (cur-x + 1) (cur-y )
+    print [plabel] of patch (cur-x + 1) (cur-y - 1)
+        print [plabel] of patch (cur-x ) (cur-y - 1)
+            print [plabel] of patch (cur-x - 1) (cur-y - 1)
+            print [plabel] of patch (cur-x - 1) (cur-y )
+            print "====================================================="
+
+
+
+  if ((shift-upleft-clear? n) and (([plabel] of patch (cur-x - 1) (cur-y + 1)) = (cur-plabel - 1)) and is-move-clear? patch (cur-x - 1) (cur-y + 1) and not is-moved?) [
+    print "masuk upleft"
+    shift-upleft n
+    set is-moved? true
+  ]
+  if shift-up-clear? n and (([plabel] of patch (cur-x) (cur-y + 1)) = (cur-plabel - 1)) and is-move-clear? patch (cur-x) (cur-y + 1) and not is-moved? [
+        print "masuk up"
+    shift-up n
+    set is-moved? true
+  ]
+  if shift-upright-clear? n and (([plabel] of patch (cur-x + 1) (cur-y + 1)) = (cur-plabel - 1)) and is-move-clear? patch (cur-x + 1) (cur-y + 1) and not is-moved? [
+        print "masuk upright"
+    shift-upright n
+    set is-moved? true
+  ]
+  if shift-right-clear? n and (([plabel] of patch (cur-x + 1) (cur-y)) = (cur-plabel - 1)) and is-move-clear? patch (cur-x + 1) (cur-y) and not is-moved? [
+        print "masuk right"
+    shift-right n
+    set is-moved? true
+  ]
+  if shift-downright-clear? n and (([plabel] of patch (cur-x + 1) (cur-y - 1)) = (cur-plabel - 1)) and is-move-clear? patch (cur-x + 1) (cur-y - 1) and not is-moved? [
+        print "masuk downright"
+    shift-downright n
+    set is-moved? true
+  ]
+  if shift-down-clear? n and (([plabel] of patch (cur-x) (cur-y - 1)) = (cur-plabel - 1)) and is-move-clear? patch (cur-x) (cur-y - 1) and not is-moved? [
+        print "masuk down"
+    shift-down n
+    set is-moved? true
+  ]
+  if shift-downleft-clear? n and (([plabel] of patch (cur-x - 1) (cur-y - 1)) = (cur-plabel - 1)) and is-move-clear? patch (cur-x - 1) (cur-y - 1) and not is-moved? [
+        print "masuk downleft"
+    shift-downleft n
+    set is-moved? true
+  ]
+  if shift-left-clear? n and (([plabel] of patch (cur-x - 1) (cur-y)) = (cur-plabel - 1)) and is-move-clear? patch (cur-x - 1) (cur-y) and not is-moved? [
+        print "masuk left"
+    shift-left n
+    set is-moved? true
+  ]
+end
 @#$#@#$#@
 GRAPHICS-WINDOW
 368
@@ -444,8 +626,8 @@ GRAPHICS-WINDOW
 22
 -12
 12
-1
-1
+0
+0
 0
 ticks
 30.0
