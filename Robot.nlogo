@@ -200,10 +200,17 @@ to-report get-neighbor [p d] ;; p for patch, d for direction
   let px [pxcor] of p
   let py [pycor] of p
 
-  if (d = 0) ; north-west
-    [ report (patch-at (px - 1) (py + 1)) ]
-      ;report (([pxcor] of p) - 1)
-      ;report (([pycor] of p) + 1)
+  if (d = 0) [ report (patch (px - 1) (py + 1) ) ] ; north-west
+  if (d = 1) [ report (patch px (py + 1) ) ] ; north
+  if (d = 2) [ report (patch (px + 1) (py + 1) ) ] ; north-east
+  if (d = 3) [ report (patch (px + 1) py ) ] ; east
+  if (d = 4) [ report (patch (px + 1) (py - 1)) ] ; south-east
+  if (d = 5) [ report (patch (px) (py - 1)) ] ; south
+  if (d = 6) [ report (patch (px - 1) (py - 1)) ] ; south-west
+  if (d = 7) [ report (patch (px - 1) (py)) ] ; west
+end
+
+to-report is-clear? [p]
 
 end
 
@@ -313,7 +320,10 @@ end
 
 to do-flood-fill
   if (not is-computed?) [
-;    while (empty? list-goal) []
+
+    ;while (not empty? list-goal) [
+
+    ;]
     set is-computed? true
   ]
 end
