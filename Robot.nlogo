@@ -1,4 +1,4 @@
-extensions [ array matrix ]
+extensions [ array ]
 
 breed [ robots robot ]
 breed [ robots2 robotB ]
@@ -6,17 +6,15 @@ breed [ robots3 robotC ]
 breed [ robots4 robotD ]
 
 globals [
+  finish
   list-goal
   goal_x
   goal_y
-  finish_1?
-  finish_2?
-  finish_3?
-  finish_4?
   draw?
   num-of-parts
   map-mx
   is-computed?
+  is-init?
 ]
 
 turtles-own [
@@ -29,13 +27,10 @@ turtles-own [
 to Initiate
   clear-all
   set-default-shape turtles "square"
-  set finish_1? false
-  set finish_2? false
-  set finish_3? false
-  set finish_4? false
   set draw? false
   set num-of-parts 4
   set is-computed? false
+  set is-init? false
   set list-goal []
 
   ;; draw the board
@@ -44,20 +39,14 @@ to Initiate
     [ set pcolor gray ]
   ]
 
-  init-matrix
-
   reset-ticks
-end
-
-to call-robots
-  setup-robot
 end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Interface Buttons ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 to rotate-right [n] ;; n indicates which robot (1,2,3,4)
-  if rotate-right-clear? n and not finish_1? and not finish_2? and not finish_3? and not finish_4?
+  if rotate-right-clear? n
     [ ask robots [ rotate-me-right ] ]
 end
 
@@ -71,7 +60,7 @@ to rotate-me-right  ;; Piece Procedure
 end
 
 to rotate-left [n] ;; n indicates which robot (1,2,3,4)
-  if rotate-left-clear? n and not finish_1? and not finish_2? and not finish_3? and not finish_4?
+  if rotate-left-clear? n
     [ ask robots [ rotate-me-left ] ]
 end
 
@@ -85,14 +74,7 @@ to rotate-me-left  ;; Piece Procedure
 end
 
 to-report shift-right-clear? [n]
-  let move-clear? false
-
-  if n = 1 and clear-at? 1 1 0 and not finish_1? [ set move-clear? true ]
-  if n = 2 and clear-at? 2 1 0 and not finish_2? [ set move-clear? true ]
-  if n = 3 and clear-at? 3 1 0 and not finish_3? [ set move-clear? true ]
-  if n = 4 and clear-at? 4 1 0 and not finish_4? [ set move-clear? true ]
-
-  report move-clear?
+  report clear-at? n 1 0
 end
 
 to shift-right [n]
@@ -107,14 +89,7 @@ to shift-right [n]
 end
 
 to-report shift-left-clear? [n]
-  let move-clear? false
-
-  if (n = 1) and (clear-at? 1 -1 0) and not finish_1? [ set move-clear? true ]
-  if (n = 2) and (clear-at? 2 -1 0) and not finish_2? [ set move-clear? true ]
-  if (n = 3) and (clear-at? 3 -1 0) and not finish_3? [ set move-clear? true ]
-  if (n = 4) and (clear-at? 4 -1 0) and not finish_4? [ set move-clear? true ]
-
-  report move-clear?
+  report clear-at? n -1 0
 end
 
 to shift-left [n]
@@ -127,14 +102,7 @@ to shift-left [n]
 end
 
 to-report shift-down-clear? [n]
-  let move-clear? false
-
-  if (n = 1) and (clear-at? 1 0 -1) and not finish_1? [ set move-clear? true ]
-  if (n = 2) and (clear-at? 2 0 -1) and not finish_2? [ set move-clear? true ]
-  if (n = 3) and (clear-at? 3 0 -1) and not finish_3? [ set move-clear? true ]
-  if (n = 4) and (clear-at? 4 0 -1) and not finish_3? [ set move-clear? true ]
-
-  report move-clear?
+  report clear-at? 1 0 -1
 end
 
 to shift-down [n]
@@ -147,14 +115,7 @@ to shift-down [n]
 end
 
 to-report shift-up-clear? [n]
-  let move-clear? false
-
-  if (n = 1) and (clear-at? 1 0 1) and not finish_1? [ set move-clear? true ]
-  if (n = 2) and (clear-at? 2 0 1) and not finish_2? [ set move-clear? true ]
-  if (n = 3) and (clear-at? 3 0 1) and not finish_3? [ set move-clear? true ]
-  if (n = 4) and (clear-at? 4 0 1) and not finish_4? [ set move-clear? true ]
-
-  report move-clear?
+  report clear-at? 1 0 1
 end
 
 to shift-up [n]
@@ -167,14 +128,7 @@ to shift-up [n]
 end
 
 to-report shift-upright-clear? [n]
-  let move-clear? false
-
-  if (n = 1) and (clear-at? 1 0 1) and (clear-at? 1 1 0) and not finish_1? [ set move-clear? true ]
-  if (n = 2) and (clear-at? 2 0 1) and (clear-at? 2 1 0) and not finish_2? [ set move-clear? true ]
-  if (n = 3) and (clear-at? 3 0 1) and (clear-at? 3 1 0) and not finish_3? [ set move-clear? true ]
-  if (n = 4) and (clear-at? 4 0 1) and (clear-at? 4 1 0) and not finish_4? [ set move-clear? true ]
-
-  report move-clear?
+  report (clear-at? 1 0 1) and (clear-at? 1 1 0)
 end
 
 to shift-upright [n]
@@ -187,14 +141,7 @@ to shift-upright [n]
 end
 
 to-report shift-upleft-clear? [n]
-  let move-clear? false
-
-  if (n = 1) and (clear-at? 1 0 1) and (clear-at? 1 -1 0) and not finish_1? [ set move-clear? true ]
-  if (n = 2) and (clear-at? 2 0 1) and (clear-at? 2 -1 0) and not finish_2? [ set move-clear? true ]
-  if (n = 3) and (clear-at? 3 0 1) and (clear-at? 3 -1 0) and not finish_3? [ set move-clear? true ]
-  if (n = 4) and (clear-at? 4 0 1) and (clear-at? 4 -1 0) and not finish_4? [ set move-clear? true ]
-
-  report move-clear?
+  report (clear-at? 1 0 1) and (clear-at? 1 -1 0)
 end
 
 to shift-upleft [n]
@@ -207,14 +154,7 @@ to shift-upleft [n]
 end
 
 to-report shift-downright-clear? [n]
-  let move-clear? false
-
-  if (n = 1) and (clear-at? 1 0 -1) and (clear-at? 1 1 0) and not finish_1? [ set move-clear? true ]
-  if (n = 2) and (clear-at? 2 0 -1) and (clear-at? 2 1 0) and not finish_2? [ set move-clear? true ]
-  if (n = 3) and (clear-at? 3 0 -1) and (clear-at? 3 1 0) and not finish_3? [ set move-clear? true ]
-  if (n = 4) and (clear-at? 4 0 -1) and (clear-at? 4 1 0) and not finish_4? [ set move-clear? true ]
-
-  report move-clear?
+  report (clear-at? 1 0 -1) and (clear-at? 1 1 0)
 end
 
 to shift-downright [n]
@@ -227,14 +167,7 @@ to shift-downright [n]
 end
 
 to-report shift-downleft-clear? [n]
-  let move-clear? false
-
-  if (n = 1) and (clear-at? 1 0 -1) and (clear-at? 1 -1 0) and not finish_1? [ set move-clear? true ]
-  if (n = 2) and (clear-at? 2 0 -1) and (clear-at? 2 -1 0) and not finish_2? [ set move-clear? true ]
-  if (n = 3) and (clear-at? 3 0 -1) and (clear-at? 3 -1 0) and not finish_3? [ set move-clear? true ]
-  if (n = 4) and (clear-at? 4 0 -1) and (clear-at? 4 -1 0) and not finish_4? [ set move-clear? true ]
-
-  report move-clear?
+  report (clear-at? 1 0 -1) and (clear-at? 1 -1 0)
 end
 
 to shift-downleft [n]
@@ -267,32 +200,25 @@ end
 
 to draw-goal
   if mouse-down?
-    [ ask patch mouse-xcor mouse-ycor [set pcolor red]
-      set goal_x round mouse-xcor;
-      set goal_y round mouse-ycor;
-
-      display
-     ]
+    [ ask patch mouse-xcor mouse-ycor [set pcolor red] display ]
 end
 
 to go
-  if finish_1? and finish_2? and finish_3? [user-message "Finish!" stop ]
-  every (0.05)
-    [ if (not finish_1? or not finish_2? or not finish_3?)
-        [ ask robots [find-goal] ]
-  ]
+  set-obstacle-and-goal
+  do-flood-fill
+  ask turtles [ find-goal ]
   display
 end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Overlap prevention Reporters ;;;
+;;;          Reporters           ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 to-report clear? [p n]  ;; p is a patch, n indicates which robot (1,2,3,4)
   if p = nobody [ report false ]
-  if (n = 1) [ report ([pcolor] of p = black) and (not any? robots2-on p) and (not any? robots3-on p) and (not any? robots4-on p) ]
-  if (n = 2) [ report ([pcolor] of p = black) and (not any? robots-on p) and (not any? robots3-on p) and (not any? robots4-on p) ]
-  if (n = 3) [ report ([pcolor] of p = black) and (not any? robots2-on p) and (not any? robots-on p) and (not any? robots4-on p) ]
-  if (n = 4) [ report ([pcolor] of p = black) and (not any? robots2-on p) and (not any? robots3-on p) and (not any? robots-on p) ]
+  if (n = 1) [ report ([pcolor] of p = black) or ([pcolor] of p = red) and (not any? robots2-on p) and (not any? robots3-on p) and (not any? robots4-on p) ]
+  if (n = 2) [ report ([pcolor] of p = black) or ([pcolor] of p = red)  and (not any? robots-on p) and (not any? robots3-on p) and (not any? robots4-on p) ]
+  if (n = 3) [ report ([pcolor] of p = black) or ([pcolor] of p = red)  and (not any? robots2-on p) and (not any? robots-on p) and (not any? robots4-on p) ]
+  if (n = 4) [ report ([pcolor] of p = black) or ([pcolor] of p = red)  and (not any? robots2-on p) and (not any? robots3-on p) and (not any? robots-on p) ]
 end
 
 to-report is-finish? [p]
@@ -335,27 +261,37 @@ to-report get-neighbor [p d] ;; p for patch, d for direction
   let py [pycor] of p
 
   if (d = 0) [ report (patch (px - 1) (py + 1) ) ] ; north-west
-  if (d = 1) [ report (patch px (py + 1) ) ] ; north
+  if (d = 1) [ report (patch px (py + 1) ) ]       ; north
   if (d = 2) [ report (patch (px + 1) (py + 1) ) ] ; north-east
-  if (d = 3) [ report (patch (px + 1) py ) ] ; east
-  if (d = 4) [ report (patch (px + 1) (py - 1)) ] ; south-east
-  if (d = 5) [ report (patch (px) (py - 1)) ] ; south
-  if (d = 6) [ report (patch (px - 1) (py - 1)) ] ; south-west
-  if (d = 7) [ report (patch (px - 1) (py)) ] ; west
+  if (d = 3) [ report (patch (px + 1) py ) ]       ; east
+  if (d = 4) [ report (patch (px + 1) (py - 1)) ]  ; south-east
+  if (d = 5) [ report (patch (px) (py - 1)) ]      ; south
+  if (d = 6) [ report (patch (px - 1) (py - 1)) ]  ; south-west
+  if (d = 7) [ report (patch (px - 1) (py)) ]      ; west
 end
 
 to-report is-clear? [p]
   let str [ plabel ] of p
   ifelse ( str = "" ) and ( [ pcolor ] of p != gray ) and ( [ pcolor ] of p != white )
-    [ report true ]
-    [ report false ]
+    [ report true ] [ report false ]
 end
 
 to-report is-move-clear? [p]
   let str [ plabel ] of p
   ifelse ( [ pcolor ] of p != gray ) and ( [ pcolor ] of p != white )
-    [ report true ]
-    [ report false ]
+    [ report true ] [ report false ]
+end
+
+to-report is-ok-place? [a b]
+  ifelse (not any? turtles-on patch a b) and (not any? turtles-on patch (a + 1) b) and (not any? turtles-on patch (a - 1) b) and (not any? turtles-on patch (a - 1) (b - 1)) and ( [ pcolor ] of patch a b != grey )
+    [ report true ] [ report false ]
+end
+
+to-report is-robot-finish? [n] ; n indicates which robot (1,2,3 4)
+  if (n = 1) [ report member? 15 [ pcolor ] of robots ]
+  if (n = 2) [ report member? 15 [ pcolor ] of robots2 ]
+  if (n = 3) [ report member? 15 [ pcolor ] of robots3 ]
+  if (n = 4) [ report member? 15 [ pcolor ] of robots4 ]
 end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -367,47 +303,47 @@ to setup-robot
   let pos-x random-pos-x
   let pos-y random-pos-y
   ask robot 0 [ setxy pos-x pos-y]
-  let robotColor 0 + random 2
-  ask robots [ setup-part 1 robotColor ]
+  let robot-color 0 + random 2
+  ask robots [ setup-part 1 robot-color ]
 
   create-robots2 num-of-parts
   set pos-x random-pos-x
   set pos-y random-pos-y
   ask patches [
-    while [not (clear? patch-at pos-x pos-y 2)]
+    while [not is-ok-place? pos-x pos-y]
       [ set pos-x random-pos-x
         set pos-y random-pos-y]
   ]
   ask robotB 4 [ setxy pos-x pos-y ]
-  let robotColor1 2 + random 2
-  ask robots2 [ setup-part 2 robotColor1 ]
+  set robot-color 2 + random 2
+  ask robots2 [ setup-part 2 robot-color ]
 
   create-robots3 num-of-parts
   set pos-x random-pos-x
   set pos-y random-pos-y
   ask patches [
-    while [not (clear? patch-at pos-x pos-y 3)]
+    while [not is-ok-place? pos-x pos-y]
       [ set pos-x random-pos-x
         set pos-y random-pos-y]
   ]
   ask robotC 8 [ setxy pos-x pos-y ]
-  let robotColor2 4 + random 2
-  ask robots3 [ setup-part 3 robotColor2 ]
+  set robot-color 4 + random 2
+  ask robots3 [ setup-part 3 robot-color ]
 
   create-robots4 num-of-parts
   set pos-x random-pos-x
   set pos-y random-pos-y
   ask patches [
-    while [not (clear? patch-at pos-x pos-y 4)]
+    while [not is-ok-place? pos-x pos-y]
       [ set pos-x random-pos-x
         set pos-y random-pos-y]
   ]
   ask robotD 12 [ setxy pos-x pos-y ]
-  let robotColor3 6 + random 2
-  ask robots4 [ setup-part 4 robotColor3 ]
+  set robot-color 6 + random 2
+  ask robots4 [ setup-part 4 robot-color ]
 end
 
-to setup-part [n s]  ;; n is which robot (1,2,3), s is a shape
+to setup-part [n s]  ; n indicates which robot (1,2,3 4), s is a shape
   if (s = 0) [ setup-l n set color blue   ]
   if (s = 1) [ setup-l n set color red    ]
   if (s = 2) [ setup-l n set color yellow ]
@@ -424,16 +360,14 @@ to setup-part [n s]  ;; n is which robot (1,2,3), s is a shape
 end
 
 to find-goal
-  set-obstacle-and-goal
-  do-flood-fill
-  if (not finish_1?) [
+  if (not is-robot-finish? 1) [
     move 1
 ;    if shift-left-clear? 1 [
 ;      shift-left 1
 ;    ]
   ]
 
-  if (not finish_2?) [
+  if (not is-robot-finish? 2) [
     move 2
 ;    shift-left 2
 ;    shift-down 2
@@ -443,7 +377,7 @@ to find-goal
 ;    ]
   ]
 
-  if (not finish_3?) [
+  if (not is-robot-finish? 3) [
     move 3
 ;    shift-left 3
 ;    shift-down 3
@@ -453,15 +387,15 @@ to find-goal
 ;    ]
   ]
 
-    if (not finish_4?) [
-      move 4
+  if (not is-robot-finish? 4) [
+    move 4
 ;      shift-left 4
 ;      shift-down 4
 
 ;      if shift-downleft-clear? 4 [
 ;        shift-down 4
 ;      ]
-    ]
+  ]
 end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -474,15 +408,11 @@ end
 ;; L-Block
 ;; 201
 ;; 3
-to setup-l [n]  ;;Piece Procedure
-  if (who = 1 + (n * num-of-parts - num-of-parts)) [ set x  1 set y  0 ]
-  if (who = 2 + (n * num-of-parts - num-of-parts)) [ set x -1 set y  0 ]
-  if (who = 3 + (n * num-of-parts - num-of-parts)) [ set x -1 set y -1 ]
-  if (who = 4 + (n * num-of-parts - num-of-parts)) [ set x -1 set y -1 ]
-end
-
-to init-matrix
-  set map-mx matrix:make-constant (2 * max-pycor - 2) (2 * max-pxcor - 2) 0
+to setup-l [n]  ;;Piece Procedure, n inidicates which robots (1, 2, 3, 4)
+  if (who = 0 + (n * num-of-parts - num-of-parts)) [ set finish false ]
+  if (who = 1 + (n * num-of-parts - num-of-parts)) [ set x  1 set y  0 set finish false ]
+  if (who = 2 + (n * num-of-parts - num-of-parts)) [ set x -1 set y  0 set finish false ]
+  if (who = 3 + (n * num-of-parts - num-of-parts)) [ set x -1 set y -1 set finish false ]
 end
 
 to do-flood-fill
@@ -490,8 +420,9 @@ to do-flood-fill
     while [not empty? list-goal] [
       add-possible-neighbor
     ]
+
     set is-computed? true
-    print "do-flood finished"
+    print "flood-filling finished"
   ]
 end
 
@@ -519,87 +450,92 @@ to add-possible-neighbor
 end
 
 to set-obstacle-and-goal
-  let set-goal (patches with [pcolor = red])
-  let set-obs (patches with [pcolor = white])
-  let set-border (patches with [pcolor = gray])
+  if (is-init? = false) [
+    let set-goal (patches with [pcolor = red])
+    let set-obs (patches with [pcolor = white])
+    let set-border (patches with [pcolor = gray])
 
-  ask set-obs [
-    set plabel 999
-    set plabel-color red
+    ask set-obs [
+      set plabel 999
+      set plabel-color red
+    ]
+
+    ask set-goal [
+      set list-goal lput self list-goal
+      set plabel 0
+      set plabel-color white
+    ]
+
+    set is-init? true
   ]
-;
-;  ask set-border [
-;    set plabel 999
-;    set plabel-color red
-;  ]
+end
 
-  ask set-goal [
-    set list-goal lput self list-goal
-    set plabel 0
-    set plabel-color white
-  ]
-
+to set-robot-finish [n] ; n indicates which robot (1, 2, 3,4)
+  if (who = 0 + (n * num-of-parts - num-of-parts)) [ set finish true ]
+  if (who = 1 + (n * num-of-parts - num-of-parts)) [ set finish true ]
+  if (who = 2 + (n * num-of-parts - num-of-parts)) [ set finish true ]
+  if (who = 3 + (n * num-of-parts - num-of-parts)) [ set finish true ]
 end
 
 to move [n] ; n indicates which robot (1 2 3 4)
-  print "masuk moveee"
+;  print "masuk moveee"
   let cur-plabel [ plabel ] of turtle ((n - 1) * 4)
   let cur-x [ xcor ] of turtle ((n - 1) * 4)
   let cur-y [ ycor ] of turtle ((n - 1) * 4)
   let is-moved? false
 
-  print "current plabel"
-  print cur-plabel
-
-  print [plabel] of patch (cur-x - 1) (cur-y + 1)
-  print [plabel] of patch (cur-x) (cur-y + 1)
-  print [plabel] of patch (cur-x + 1) (cur-y + 1)
-  print [plabel] of patch (cur-x + 1) (cur-y )
-    print [plabel] of patch (cur-x + 1) (cur-y - 1)
-        print [plabel] of patch (cur-x ) (cur-y - 1)
-            print [plabel] of patch (cur-x - 1) (cur-y - 1)
-            print [plabel] of patch (cur-x - 1) (cur-y )
-            print "====================================================="
+;  print "current plabel"
+;  print cur-plabel
+;
+;  print [plabel] of patch (cur-x - 1) (cur-y + 1)
+;  print [plabel] of patch (cur-x) (cur-y + 1)
+;  print [plabel] of patch (cur-x + 1) (cur-y + 1)
+;  print [plabel] of patch (cur-x + 1) (cur-y )
+;    print [plabel] of patch (cur-x + 1) (cur-y - 1)
+;        print [plabel] of patch (cur-x ) (cur-y - 1)
+;            print [plabel] of patch (cur-x - 1) (cur-y - 1)
+;            print [plabel] of patch (cur-x - 1) (cur-y )
+;            print "====================================================="
 
 
 
   if ((shift-upleft-clear? n) and (([plabel] of patch (cur-x - 1) (cur-y + 1)) = (cur-plabel - 1)) and is-move-clear? patch (cur-x - 1) (cur-y + 1) and not is-moved?) [
-    print "masuk upleft"
+    ;print "masuk upleft"
     shift-upleft n
     set is-moved? true
   ]
   if shift-up-clear? n and (([plabel] of patch (cur-x) (cur-y + 1)) = (cur-plabel - 1)) and is-move-clear? patch (cur-x) (cur-y + 1) and not is-moved? [
-        print "masuk up"
+        ;print "masuk up"
     shift-up n
     set is-moved? true
   ]
   if shift-upright-clear? n and (([plabel] of patch (cur-x + 1) (cur-y + 1)) = (cur-plabel - 1)) and is-move-clear? patch (cur-x + 1) (cur-y + 1) and not is-moved? [
-        print "masuk upright"
+;        print "masuk upright"
     shift-upright n
     set is-moved? true
   ]
   if shift-right-clear? n and (([plabel] of patch (cur-x + 1) (cur-y)) = (cur-plabel - 1)) and is-move-clear? patch (cur-x + 1) (cur-y) and not is-moved? [
-        print "masuk right"
+;        print "masuk right"
     shift-right n
     set is-moved? true
   ]
   if shift-downright-clear? n and (([plabel] of patch (cur-x + 1) (cur-y - 1)) = (cur-plabel - 1)) and is-move-clear? patch (cur-x + 1) (cur-y - 1) and not is-moved? [
-        print "masuk downright"
+;        print "masuk downright"
     shift-downright n
     set is-moved? true
   ]
   if shift-down-clear? n and (([plabel] of patch (cur-x) (cur-y - 1)) = (cur-plabel - 1)) and is-move-clear? patch (cur-x) (cur-y - 1) and not is-moved? [
-        print "masuk down"
+;        print "masuk down"
     shift-down n
     set is-moved? true
   ]
   if shift-downleft-clear? n and (([plabel] of patch (cur-x - 1) (cur-y - 1)) = (cur-plabel - 1)) and is-move-clear? patch (cur-x - 1) (cur-y - 1) and not is-moved? [
-        print "masuk downleft"
+;        print "masuk downleft"
     shift-downleft n
     set is-moved? true
   ]
   if shift-left-clear? n and (([plabel] of patch (cur-x - 1) (cur-y)) = (cur-plabel - 1)) and is-move-clear? patch (cur-x - 1) (cur-y) and not is-moved? [
-        print "masuk left"
+;        print "masuk left"
     shift-left n
     set is-moved? true
   ]
@@ -808,7 +744,7 @@ BUTTON
 320
 65
 Call Robots
-call-robots
+setup-robot
 NIL
 1
 T
