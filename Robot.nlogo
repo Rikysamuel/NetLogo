@@ -211,7 +211,10 @@ to-report get-neighbor [p d] ;; p for patch, d for direction
 end
 
 to-report is-clear? [p]
-
+  let str [ plabel ] of p
+  ifelse ( str = "" ) and ( [ pcolor ] of p != gray ) and ( [ pcolor ] of p != white )
+    [ report true ]
+    [ report false ]
 end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -320,22 +323,51 @@ end
 
 to do-flood-fill
   if (not is-computed?) [
-
-    ;while (not empty? list-goal) [
-
-    ;]
+    while [not empty? list-goal] [
+      add-possible-neighbor
+    ]
     set is-computed? true
+    print "do-flood finished"
   ]
+end
+
+to add-possible-neighbor
+  let f-elem ( first list-goal )
+  let i 0
+  let tmp-elem 0
+
+  while [ i < 8 ] [
+    set tmp-elem ( get-neighbor f-elem i )
+    if (is-clear? (tmp-elem)) [
+      set list-goal lput tmp-elem list-goal ; add neighbor element
+
+      ask tmp-elem [
+        set plabel ( [plabel] of f-elem) + 1
+        set plabel-color white
+      ]
+    ]
+    set i ( i + 1 )
+  ]
+
+  set list-goal remove f-elem list-goal
+
+
 end
 
 to set-obstacle-and-goal
   let set-goal (patches with [pcolor = red])
   let set-obs (patches with [pcolor = white])
+  let set-border (patches with [pcolor = gray])
 
   ask set-obs [
     set plabel 999
     set plabel-color red
   ]
+;
+;  ask set-border [
+;    set plabel 999
+;    set plabel-color red
+;  ]
 
   ask set-goal [
     set list-goal lput self list-goal
