@@ -112,6 +112,34 @@ to shift-up [n]
   if (n = 4) and (clear-at? 4 0 1) and not finish_4? [ ask robots4 [ set ycor ycor + 1 ] ]
 end
 
+to shift-upright [n]
+  if (n = 1) and (clear-at? 1 0 1) and (clear-at? 1 1 0) and not finish_1? [ ask robots [ set ycor ycor + 1  set xcor xcor + 1 ] ]
+  if (n = 2) and (clear-at? 2 0 1) and (clear-at? 2 1 0) and not finish_2? [ ask robots2 [ set ycor ycor + 1  set xcor xcor + 1 ] ]
+  if (n = 3) and (clear-at? 3 0 1) and (clear-at? 3 1 0) and not finish_3? [ ask robots3 [ set ycor ycor + 1 set xcor xcor + 1 ] ]
+  if (n = 4) and (clear-at? 4 0 1) and (clear-at? 4 1 0) and not finish_4? [ ask robots4 [ set ycor ycor + 1 set xcor xcor + 1 ] ]
+end
+
+to shift-upleft [n]
+  if (n = 1) and (clear-at? 1 0 1) and (clear-at? 1 -1 0) and not finish_1? [ ask robots [ set ycor ycor + 1  set xcor xcor - 1 ] ]
+  if (n = 2) and (clear-at? 2 0 1) and (clear-at? 2 -1 0) and not finish_2? [ ask robots2 [ set ycor ycor + 1  set xcor xcor - 1 ] ]
+  if (n = 3) and (clear-at? 3 0 1) and (clear-at? 3 -1 0) and not finish_3? [ ask robots3 [ set ycor ycor + 1 set xcor xcor - 1 ] ]
+  if (n = 4) and (clear-at? 4 0 1) and (clear-at? 4 -1 0) and not finish_4? [ ask robots4 [ set ycor ycor + 1 set xcor xcor - 1 ] ]
+end
+
+to shift-downright [n]
+  if (n = 1) and (clear-at? 1 0 -1) and (clear-at? 1 1 0) and not finish_1? [ ask robots [ set ycor ycor - 1  set xcor xcor + 1 ] ]
+  if (n = 2) and (clear-at? 2 0 -1) and (clear-at? 2 1 0) and not finish_2? [ ask robots2 [ set ycor ycor - 1  set xcor xcor + 1 ] ]
+  if (n = 3) and (clear-at? 3 0 -1) and (clear-at? 3 1 0) and not finish_3? [ ask robots3 [ set ycor ycor - 1 set xcor xcor + 1 ] ]
+  if (n = 4) and (clear-at? 4 0 -1) and (clear-at? 4 1 0) and not finish_4? [ ask robots4 [ set ycor ycor - 1 set xcor xcor + 1 ] ]
+end
+
+to shift-downleft [n]
+  if (n = 1) and (clear-at? 1 0 -1) and (clear-at? 1 -1 0) and not finish_1? [ ask robots [ set ycor ycor - 1  set xcor xcor - 1 ] ]
+  if (n = 2) and (clear-at? 2 0 -1) and (clear-at? 2 -1 0) and not finish_2? [ ask robots2 [ set ycor ycor - 1  set xcor xcor - 1 ] ]
+  if (n = 3) and (clear-at? 3 0 -1) and (clear-at? 3 -1 0) and not finish_3? [ ask robots3 [ set ycor ycor - 1 set xcor xcor - 1 ] ]
+  if (n = 4) and (clear-at? 4 0 -1) and (clear-at? 4 -1 0) and not finish_4? [ ask robots4 [ set ycor ycor - 1 set xcor xcor - 1 ] ]
+end
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Runtime Procedures ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -143,7 +171,7 @@ end
 
 to go
   if finish_1? and finish_2? and finish_3? [user-message "Finish!" stop ]
-  every (0.05)
+  every (0.5)
     [ if (not finish_1? or not finish_2? or not finish_3?)
         [ ask robots [find-goal] ]
   ]
@@ -283,9 +311,11 @@ to setup-part [n s]  ;; n is which robot (1,2,3), s is a shape
 end
 
 to find-goal
-  if (not finish_1?)
-    [ shift-left 1
-      shift-down 1 ]
+  if (not finish_1?) [
+    ;shift-downleft 1
+
+    let str [ plabel ] of p
+  ]
 
   if (not finish_2?)
     [ shift-left 2
@@ -402,7 +432,7 @@ GRAPHICS-WINDOW
 1
 0
 ticks
-30.0
+5.0
 
 BUTTON
 28
