@@ -84,11 +84,26 @@ to rotate-me-left  ;; Piece Procedure
   set ycor ([ycor] of turtle 0) + y
 end
 
+to-report shift-right-clear? [n]
+  let move-clear? false
+
+  if n = 1 and clear-at? 1 1 0 and not finish_1? [ set move-clear? true ]
+  if n = 2 and clear-at? 2 1 0 and not finish_2? [ set move-clear? true ]
+  if n = 3 and clear-at? 3 1 0 and not finish_3? [ set move-clear? true ]
+  if n = 4 and clear-at? 4 1 0 and not finish_4? [ set move-clear? true ]
+
+  report move-clear?
+end
+
 to shift-right [n]
-  if n = 1 and clear-at? 1 1 0 and not finish_1? [ ask robots [ set xcor xcor + 1 ] ]
-  if n = 2 and clear-at? 2 1 0 and not finish_2? [ ask robots2 [ set xcor xcor + 1 ] ]
-  if n = 3 and clear-at? 3 1 0 and not finish_3? [ ask robots3 [ set xcor xcor + 1 ] ]
-  if n = 4 and clear-at? 4 1 0 and not finish_4? [ ask robots4 [ set xcor xcor + 1 ] ]
+  if shift-right-clear? n
+  [
+    if n = 1 [ ask robots [ set xcor xcor + 1 ] ]
+    if n = 2 [ ask robots2 [ set xcor xcor + 1 ] ]
+    if n = 3 [ ask robots3 [ set xcor xcor + 1 ] ]
+    if n = 4 [ ask robots4 [ set xcor xcor + 1 ] ]
+  ]
+
 end
 
 to shift-left [n]
@@ -312,9 +327,10 @@ end
 
 to find-goal
   if (not finish_1?) [
-    ;shift-downleft 1
-
-    let str [ plabel ] of p
+    if shift-right-clear? 1
+    [
+      shift-right 1
+    ]
   ]
 
   if (not finish_2?)
@@ -432,7 +448,7 @@ GRAPHICS-WINDOW
 1
 0
 ticks
-5.0
+30.0
 
 BUTTON
 28
