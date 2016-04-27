@@ -6,6 +6,7 @@ breed [ robots3 robotC ]
 breed [ robots4 robotD ]
 
 globals [
+  list-goal
   goal_x
   goal_y
   finish_1?
@@ -35,6 +36,7 @@ to Initiate
   set draw? false
   set num-of-parts 4
   set is-computed? false
+  set list-goal []
 
   ;; draw the board
   ask patches
@@ -194,6 +196,17 @@ to-report center-to-edge-y [val]
   report (max-pycor - val - 1)
 end
 
+to-report get-neighbor [p d] ;; p for patch, d for direction
+  let px [pxcor] of p
+  let py [pycor] of p
+
+  if (d = 0) ; north-west
+    [ report (patch-at (px - 1) (py + 1)) ]
+      ;report (([pxcor] of p) - 1)
+      ;report (([pycor] of p) + 1)
+
+end
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; robots Procedures ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -300,8 +313,7 @@ end
 
 to do-flood-fill
   if (not is-computed?) [
-
-
+;    while (empty? list-goal) []
     set is-computed? true
   ]
 end
@@ -316,6 +328,7 @@ to set-obstacle-and-goal
   ]
 
   ask set-goal [
+    set list-goal lput self list-goal
     set plabel 0
     set plabel-color white
   ]
