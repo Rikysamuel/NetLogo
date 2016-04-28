@@ -223,7 +223,10 @@ to-report clear? [p n]  ;; p is a patch, n indicates which robot (1,2,3,4)
   ifelse (n = 1) and ( [ pcolor ] of p = black or is-finish? p) [      ; -------------------------- robot 1
     ifelse (is-robot-finish? 2) [
       ifelse (is-robot-finish? 4)
-        [ report (not any? robots3-on p) ]
+        [ ifelse (is-robot-finish? 3)
+          [ report true ]
+          [ report (not any? robots3-on p) ]
+        ]
         [
           ifelse (is-robot-finish? 3)
           [ report (not any? robots4-on p) ]
@@ -247,7 +250,10 @@ to-report clear? [p n]  ;; p is a patch, n indicates which robot (1,2,3,4)
     ifelse (n = 2) and ( [ pcolor ] of p = black or is-finish? p) [      ; -------------------------- robot 2
       ifelse (is-robot-finish? 1) [
         ifelse (is-robot-finish? 3)
-        [ report (not any? robots4-on p) ]
+        [ ifelse (is-robot-finish? 4)
+          [ report true ]
+          [ report (not any? robots4-on p) ]
+        ]
         [
           ifelse (is-robot-finish? 4)
           [ report (not any? robots3-on p) ]
@@ -272,7 +278,10 @@ to-report clear? [p n]  ;; p is a patch, n indicates which robot (1,2,3,4)
        ifelse (n = 3) and ( [ pcolor ] of p = black or is-finish? p) [      ; -------------------------- robot 3
         ifelse (is-robot-finish? 1) [
           ifelse (is-robot-finish? 2)
-          [ report (not any? robots4-on p) ]
+          [ ifelse (is-robot-finish? 4)
+            [ report true ]
+            [ report (not any? robots4-on p) ]
+          ]
           [
              ifelse (is-robot-finish? 4)
              [ report (not any? robots2-on p) ]
@@ -296,7 +305,10 @@ to-report clear? [p n]  ;; p is a patch, n indicates which robot (1,2,3,4)
        ifelse (n = 4) and ( [ pcolor ] of p = black or is-finish? p) [      ; -------------------------- robot 4
         ifelse (is-robot-finish? 1) [
           ifelse (is-robot-finish? 2)
-          [ report (not any? robots3-on p) ]
+          [ ifelse (is-robot-finish? 3)
+            [ report true ]
+            [ report (not any? robots3-on p) ]
+          ]
           [
              ifelse (is-robot-finish? 3)
              [ report (not any? robots2-on p) ]
