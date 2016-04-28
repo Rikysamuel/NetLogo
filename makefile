@@ -1,2 +1,2 @@
 make:
-	./main < test.in
+	main.exe < test.in
