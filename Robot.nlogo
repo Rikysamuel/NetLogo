@@ -62,6 +62,15 @@ to rotate-right [n] ;; n indicates which robot (1,2,3,4)
     [ ask robots [ rotate-me-right ] ]
 end
 
+to rotate-me-right-new [n]  ;; Piece Procedure
+  let oldx x
+  let oldy y
+  set x oldy
+  set y (- oldx)
+  set xcor ([xcor] of turtle ((n - 1) * num-of-parts)) + x
+  set ycor ([ycor] of turtle ((n - 1) * num-of-parts)) + y
+end
+
 to rotate-me-right  ;; Piece Procedure
   let oldx x
   let oldy y
@@ -228,7 +237,13 @@ to go
 ;    ask turtle 12 [ output-print dist]
 ;    stop
 ;  ]
-  if (is-robot-finish? 1) and (is-robot-finish? 2) and (is-robot-finish? 3) and (is-robot-finish? 4) [stop]
+  if (is-robot-finish? 1) and (is-robot-finish? 2) and (is-robot-finish? 3) and (is-robot-finish? 4) [
+    ask turtle 0 [ output-print dist-robot1]
+    ask turtle 4 [ output-print dist-robot2]
+    ask turtle 8 [ output-print dist-robot3]
+    ask turtle 12 [ output-print dist-robot4]
+    stop
+  ]
   set-obstacle-and-goal
 ;  create-virtual-obs
 ;  do-flood-fill
@@ -352,9 +367,31 @@ to move-new [n] ; n indicates which robot (1 2 3 4)
   ]
 
   if ((movement = "R") and not is-moved?) [
-    rotate-right n
-;    print "panggilR"
+;    rotate-right n
+    if (n = 1) [ ask robots [ rotate-me-right-new 1 ]]
+    if (n = 2) [ ask robots2 [ rotate-me-right-new 2 ]]
+    if (n = 3) [ ask robots3 [ rotate-me-right-new 3 ]]
+    if (n = 4) [ ask robots4 [ rotate-me-right-new 4 ]]
+    print "panggilR"
     set is-moved? true
+  ]
+  if is-moved? [
+    if (n = 1) [
+      set dist-robot1 (dist-robot1 + 1)
+      ask turtle 0 [pen-down]
+    ]
+    if (n = 2) [
+      set dist-robot2 (dist-robot2 + 1)
+      ask turtle 4 [pen-down]
+    ]
+    if (n = 3) [
+      set dist-robot3 (dist-robot3 + 1)
+      ask turtle 8 [pen-down]
+    ]
+    if (n = 4) [
+      set dist-robot4 (dist-robot4 + 1)
+      ask turtle 12 [pen-down]
+    ]
   ]
 end
 
@@ -459,10 +496,10 @@ end
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 to-report clear? [p n]  ;; p is a patch, n indicates which robot (1,2,3,4)
   if p = nobody [ report false ]
-  if (n = 1) [ report ([pcolor] of p = black) or ([pcolor] of p = red) and (not any? robots2-on p) and (not any? robots3-on p) and (not any? robots4-on p) ]
-  if (n = 2) [ report ([pcolor] of p = black) or ([pcolor] of p = red)  and (not any? robots-on p) and (not any? robots3-on p) and (not any? robots4-on p) ]
-  if (n = 3) [ report ([pcolor] of p = black) or ([pcolor] of p = red)  and (not any? robots2-on p) and (not any? robots-on p) and (not any? robots4-on p) ]
-  if (n = 4) [ report ([pcolor] of p = black) or ([pcolor] of p = red)  and (not any? robots2-on p) and (not any? robots3-on p) and (not any? robots-on p) ]
+  if (n = 1) [ report ([pcolor] of p = black) or ([pcolor] of p = red)]; and (not any? robots2-on p) and (not any? robots3-on p) and (not any? robots4-on p) ]
+  if (n = 2) [ report ([pcolor] of p = black) or ([pcolor] of p = red)];  and (not any? robots-on p) and (not any? robots3-on p) and (not any? robots4-on p) ]
+  if (n = 3) [ report ([pcolor] of p = black) or ([pcolor] of p = red)];  and (not any? robots2-on p) and (not any? robots-on p) and (not any? robots4-on p) ]
+  if (n = 4) [ report ([pcolor] of p = black) or ([pcolor] of p = red)];  and (not any? robots2-on p) and (not any? robots3-on p) and (not any? robots-on p) ]
 end
 
 to-report is-finish? [p]
@@ -765,6 +802,7 @@ to move [n] ; n indicates which robot (1 2 3 4)
   ]
 
   if is-moved? [
+    print "masuk moved"
     if (n = 1) [
       set dist-robot1 (dist-robot1 + 1)
       ask turtle 0 [pen-down]
@@ -1097,7 +1135,7 @@ PLOT
 188
 322
 338
-plot 1
+Distance
 time
 distance
 0.0
