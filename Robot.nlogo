@@ -217,10 +217,12 @@ end
 to go
   if (is-robot-finish? 1) and (is-robot-finish? 2) and (is-robot-finish? 3) and (is-robot-finish? 4) [
     output-print "Total distance :"
-    ask turtle 0 [ output-print dist-robot1]
-    ask turtle 4 [ output-print dist-robot2]
-    ask turtle 8 [ output-print dist-robot3]
-    ask turtle 12 [ output-print dist-robot4]
+    let d1 "d1: "
+
+    ask turtle 0 [ output-write d1 output-print dist-robot1]
+    ask turtle 4 [ output-write "d2: " output-print dist-robot2]
+    ask turtle 8 [ output-write "d3: " output-print dist-robot3]
+    ask turtle 12 [ output-write "d4: " output-print dist-robot4]
     stop
   ]
   if (is-robot-finish? 1) and (is-robot-finish? 2) and (is-robot-finish? 3) and (is-robot-finish? 4) [stop]
@@ -557,7 +559,7 @@ to add-possible-neighbor
 
       ask tmp-elem [
         set plabel ( [plabel] of f-elem) + 1
-        set plabel-color white
+        set plabel-color black
       ]
     ]
     set i ( i + 1 )
@@ -591,22 +593,22 @@ to set-obstacle-and-goal
     ask set-goal [
       set list-goal lput self list-goal
       set plabel 0
-      set plabel-color white
+      set plabel-color black
     ]
 
     ask set-obs [
       set plabel 999
-      set plabel-color red
+      set plabel-color white
     ]
 
     ask set-obs-border [
       set plabel 999
-      set plabel-color red
+      set plabel-color brown
     ]
 
     ask set-border [
       set plabel 999
-      set plabel-color red
+      set plabel-color gray
     ]
 
     set is-init? true
@@ -684,8 +686,8 @@ end
 to move-stucked [n dir]
   if ((dir mod 4) = 0) [ if (clear-at? n 1 0) and (clear-at? n 2 0) [ shift-right n shift-right n ] ]
   if ((dir mod 4) = 1) [ if (clear-at? n 0 -1) and (clear-at? n 0 -2) [ shift-down n shift-down n ] ]
-  if ((dir mod 4) = 2) [ if (clear-at? n -1 0) and (clear-at? n -2 0) [ shift-left n shift-left n ] print "masuk left"]
-  if ((dir mod 4) = 3) [ if (clear-at? n 0 1) and (clear-at? n 0 2) [ shift-up n shift-up n ] print "masuk up"]
+  if ((dir mod 4) = 2) [ if (clear-at? n -1 0) and (clear-at? n -2 0) [ shift-left n shift-left n ] ]
+  if ((dir mod 4) = 3) [ if (clear-at? n 0 1) and (clear-at? n 0 2) [ shift-up n shift-up n ] ]
 end
 
 to create-virtual-obs
@@ -694,72 +696,60 @@ to create-virtual-obs
     let x-tmp [pxcor] of self
     let y-tmp [pycor] of self
 
-;    if (patch (x-tmp + 2) (y-tmp + 1) != nobody) [
-;      if ([plabel] of patch (x-tmp + 2) (y-tmp + 1) = 999) and [pcolor] of patch (x-tmp + 2) (y-tmp + 1) != black [ ;east top
-;        ask patch (x-tmp + 1) y-tmp [ if [pcolor] of self != red [set plabel 999 ]]
-;        ask patch (x-tmp + 1) (y-tmp + 1) [ if [pcolor] of self != red [set plabel 999 ]]
-;      ]
-;    ]
     if (patch (x-tmp + 2) y-tmp != nobody) [
       if ([plabel] of patch (x-tmp + 2) y-tmp = 999) and [pcolor] of patch (x-tmp + 2) y-tmp != black [ ;east center
-        ask patch (x-tmp + 1) y-tmp [ if [pcolor] of self != red [set plabel 999 ]]
+        ask patch (x-tmp + 1) y-tmp [ if [pcolor] of self != red [set plabel 999 set plabel-color [pcolor] of self ]]
       ]
     ]
     if (patch (x-tmp + 2) (y-tmp - 1) != nobody) [
       if ([plabel] of patch (x-tmp + 2) (y-tmp - 1) = 999) and [pcolor] of patch (x-tmp + 2) (y-tmp - 1) != black [ ;east bottom
-        ask patch (x-tmp + 1) y-tmp [ if [pcolor] of self != red [set plabel 999 ]]
-        ask patch (x-tmp + 1) (y-tmp - 1) [ if [pcolor] of self != red [set plabel 999 ]]
+        ask patch (x-tmp + 1) y-tmp [ if [pcolor] of self != red [set plabel 999 set plabel-color [pcolor] of self ]]
+        ask patch (x-tmp + 1) (y-tmp - 1) [ if [pcolor] of self != red [set plabel 999 set plabel-color [pcolor] of self ]]
       ]
     ]
     if (patch (x-tmp + 1) (y-tmp - 2) != nobody) [
       if ([plabel] of patch (x-tmp + 1) (y-tmp - 2) = 999) and [pcolor] of patch (x-tmp + 1) (y-tmp - 2) != black [ ;south right
-        ask patch (x-tmp + 1) (y-tmp - 1) [ if [pcolor] of self != red [set plabel 999 ]]
-        ask patch (x-tmp + 1) (y-tmp) [ if [pcolor] of self != red [set plabel 999 ]]
+        ask patch (x-tmp + 1) (y-tmp - 1) [ if [pcolor] of self != red [set plabel 999 set plabel-color [pcolor] of self ]]
+        ask patch (x-tmp + 1) (y-tmp) [ if [pcolor] of self != red [set plabel 999 set plabel-color [pcolor] of self ]]
       ]
     ]
     if (patch x-tmp (y-tmp - 2) != nobody) [
       if ([plabel] of patch x-tmp (y-tmp - 2) = 999) and [pcolor] of patch x-tmp (y-tmp - 2) != black [;south center
-        ask patch (x-tmp) (y-tmp - 1) [ if [pcolor] of self != red [set plabel 999 ]]
+        ask patch (x-tmp) (y-tmp - 1) [ if [pcolor] of self != red [set plabel 999 set plabel-color [pcolor] of self ]]
       ]
     ]
     if (patch (x-tmp - 1) (y-tmp - 2) != nobody) [
       if ([plabel] of patch (x-tmp - 1) (y-tmp - 2) = 999) and [pcolor] of patch (x-tmp - 1) (y-tmp - 2) != black [ ;south left
-        ask patch (x-tmp - 1) (y-tmp - 1) [ if [pcolor] of self != red [set plabel 999 ]]
-        ask patch (x-tmp - 1) (y-tmp) [ if [pcolor] of self != red [set plabel 999 ]]
+        ask patch (x-tmp - 1) (y-tmp - 1) [ if [pcolor] of self != red [set plabel 999 set plabel-color [pcolor] of self ]]
+        ask patch (x-tmp - 1) (y-tmp) [ if [pcolor] of self != red [set plabel 999 set plabel-color [pcolor] of self ]]
       ]
     ]
-;    if (patch (x-tmp - 2) (y-tmp - 1) != nobody) [
-;      if ([plabel] of patch (x-tmp - 2) (y-tmp - 1) = 999) and [pcolor] of patch (x-tmp - 2) (y-tmp - 1) != black [ ;west bottom
-;        ask patch (x-tmp - 1) (y-tmp - 1) [ if [pcolor] of self != red [set plabel 999 ]]
-;        ask patch (x-tmp) (y-tmp - 1) [ if [pcolor] of self != red [set plabel 999 ]]
-;      ]
-;    ]
     if (patch (x-tmp - 2) (y-tmp) != nobody) [
       if ([plabel] of patch (x-tmp - 2) (y-tmp) = 999) and [pcolor] of patch (x-tmp - 2) (y-tmp) != black [ ;west center
-        ask patch (x-tmp - 1) (y-tmp) [ if [pcolor] of self != red [set plabel 999 ]]
+        ask patch (x-tmp - 1) (y-tmp) [ if [pcolor] of self != red [set plabel 999 set plabel-color [pcolor] of self ]]
       ]
     ]
     if (patch (x-tmp - 2) (y-tmp + 1) != nobody) [
       if ([plabel] of patch (x-tmp - 2) (y-tmp + 1) = 999) and [pcolor] of patch (x-tmp - 2) (y-tmp + 1) != black [ ;west top
-        ask patch (x-tmp - 1) (y-tmp) [ if [pcolor] of self != red [set plabel 999 ]]
-        ask patch (x-tmp - 1) (y-tmp + 1) [ if [pcolor] of self != red [set plabel 999 ]]
+        ask patch (x-tmp - 1) (y-tmp) [ if [pcolor] of self != red [set plabel 999 set plabel-color [pcolor] of self ]]
+        ask patch (x-tmp - 1) (y-tmp + 1) [ if [pcolor] of self != red [set plabel 999 set plabel-color [pcolor] of self ]]
       ]
     ]
     if (patch (x-tmp - 1) (y-tmp + 2) != nobody) [
       if ([plabel] of patch (x-tmp - 1) (y-tmp + 2) = 999) and [pcolor] of patch (x-tmp - 1) (y-tmp + 2) != black [ ;north left
-        ask patch (x-tmp - 1) (y-tmp) [ if [pcolor] of self != red [set plabel 999 ]]
-        ask patch (x-tmp - 1) (y-tmp + 1) [ if [pcolor] of self != red [set plabel 999 ]]
+        ask patch (x-tmp - 1) (y-tmp) [ if [pcolor] of self != red [set plabel 999 set plabel-color [pcolor] of self ]]
+        ask patch (x-tmp - 1) (y-tmp + 1) [ if [pcolor] of self != red [set plabel 999 set plabel-color [pcolor] of self ]]
       ]
     ]
     if (patch (x-tmp) (y-tmp + 2) != nobody) [
       if ([plabel] of patch (x-tmp) (y-tmp + 2) = 999) and [pcolor] of patch (x-tmp) (y-tmp + 2) != black [ ;north center
-        ask patch (x-tmp) (y-tmp + 1) [ if [pcolor] of self != red [set plabel 999 ]]
+        ask patch (x-tmp) (y-tmp + 1) [ if [pcolor] of self != red [set plabel 999 set plabel-color [pcolor] of self ]]
       ]
     ]
     if (patch (x-tmp + 1) (y-tmp + 2) != nobody) [
       if ([plabel] of patch (x-tmp + 1) (y-tmp + 2) = 999) and [pcolor] of patch (x-tmp + 1) (y-tmp + 2) != black [ ;north right
-        ask patch (x-tmp + 1) (y-tmp) [ if [pcolor] of self != red [set plabel 999 ]]
-        ask patch (x-tmp + 1) (y-tmp + 1) [ if [pcolor] of self != red [set plabel 999 ]]
+        ask patch (x-tmp + 1) (y-tmp) [ if [pcolor] of self != red [set plabel 999 set plabel-color [pcolor] of self ]]
+        ask patch (x-tmp + 1) (y-tmp + 1) [ if [pcolor] of self != red [set plabel 999 set plabel-color [pcolor] of self ]]
       ]
     ]
   ]
@@ -810,74 +800,6 @@ NIL
 1
 
 BUTTON
-1217
-220
-1272
-253
-Right
-shift-right 3
-NIL
-1
-T
-OBSERVER
-NIL
-D
-NIL
-NIL
-0
-
-BUTTON
-1099
-220
-1154
-253
-Left
-shift-left 3
-NIL
-1
-T
-OBSERVER
-NIL
-A
-NIL
-NIL
-0
-
-BUTTON
-1115
-282
-1182
-315
-RotLeft
-rotate-left
-NIL
-1
-T
-OBSERVER
-NIL
-Q
-NIL
-NIL
-0
-
-BUTTON
-1184
-282
-1251
-315
-RotRight
-rotate-right
-NIL
-1
-T
-OBSERVER
-NIL
-E
-NIL
-NIL
-0
-
-BUTTON
 27
 80
 162
@@ -893,40 +815,6 @@ NIL
 NIL
 NIL
 0
-
-BUTTON
-1154
-220
-1217
-253
-Down
-shift-down 3
-NIL
-1
-T
-OBSERVER
-NIL
-S
-NIL
-NIL
-1
-
-BUTTON
-1154
-188
-1217
-221
-Up
-shift-up 3
-NIL
-1
-T
-OBSERVER
-NIL
-W
-NIL
-NIL
-1
 
 BUTTON
 185
