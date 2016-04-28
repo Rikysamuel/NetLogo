@@ -1,10 +1,15 @@
-extensions [ shell matrix]
+extensions [ shell matrix string ]
 breed [ robots robot ]
 breed [ robots2 robotB ]
 breed [ robots3 robotC ]
 breed [ robots4 robotD ]
 
 globals [
+  first-robot-steps
+  second-robot-steps
+  third-robot-steps
+  fourth-robot-steps
+  finish
   list-goal
   goal_x
   goal_y
@@ -17,7 +22,7 @@ globals [
 ]
 
 turtles-own [
-  x y finish dist
+  x y
 ]
 
 ;;;;;;;;;;;;;;;;;;;;;;;;
@@ -229,8 +234,6 @@ to call-command-line
       let y-turtle-idx [ycor] of turtle (turtle-idx)
       matrix:set arr (y-turtle-idx + 11) (x-turtle-idx + 21) (int (turtle-idx / 4) + 1)
 
-      print (int (turtle-idx / 4) + 1)
-
       set turtle-idx (turtle-idx + 1)
     ]
 
@@ -273,12 +276,49 @@ to call-command-line
       set i-idx (i-idx - 1)
       set j-idx 0
     ]
-;    print tmpstr
+    if (file-exists? "test.in") [
+      file-delete "test.in"
+    ]
     file-open "test.in"
     file-print tmpstr
     file-flush
     file-close
+
+    let cmd shell:exec "make"
+    print cmd
+    let xx position "\r\n" cmd
+    let fi substring cmd (xx + 2) (length cmd)
+
+
+    let xx1 position "\r\n" fi
+    set first-robot-steps substring fi 0 (xx1)
+    let sec substring fi (xx1 + 2) (length fi)
+
+    let xx2 position "\r\n" sec
+    set second-robot-steps substring sec 0 (xx2)
+    let thi substring sec (xx2 + 2) (length sec)
+
+    let xx3 position "\r\n" thi
+    set third-robot-steps substring thi 0 (xx3)
+    let fou substring thi (xx3 + 2) (length thi)
+
+    let xx4 position "\r\n" fou
+    set fourth-robot-steps fou
+
+    print "fi"
+    print first-robot-steps
+    print "se"
+    print second-robot-steps
+    print "th"
+    print third-robot-steps
+    print "fo"
+    print fourth-robot-steps
+
   ]
+end
+
+to split-on-string [par char]
+
 end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -286,120 +326,10 @@ end
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 to-report clear? [p n]  ;; p is a patch, n indicates which robot (1,2,3,4)
   if p = nobody [ report false ]
-
-  ifelse (n = 1) and ( [ pcolor ] of p = black or is-finish? p) [      ; -------------------------- robot 1
-    ifelse (is-robot-finish? 2) [
-      ifelse (is-robot-finish? 4)
-        [ ifelse (is-robot-finish? 3)
-          [ report true ]
-          [ report (not any? robots3-on p) ]
-        ]
-        [
-          ifelse (is-robot-finish? 3)
-          [ report (not any? robots4-on p) ]
-          [ report (not any? robots3-on p) and (not any? robots4-on p) ]
-        ]
-    ] [
-      ifelse (is-robot-finish? 3) [
-        ifelse (is-robot-finish? 4)
-        [ report (not any? robots2-on p) ]
-        [ report (not any? robots2-on p) and (not any? robots4-on p) ]
-      ] [
-      ifelse (is-robot-finish? 4) [
-        report (not any? robots2-on p) and (not any? robots3-on p)
-      ] [
-          report (not any? robots2-on p) and (not any? robots3-on p) and (not any? robots4-on p)
-      ]
-    ]
-   ]
-
-   ] [
-    ifelse (n = 2) and ( [ pcolor ] of p = black or is-finish? p) [      ; -------------------------- robot 2
-      ifelse (is-robot-finish? 1) [
-        ifelse (is-robot-finish? 3)
-        [ ifelse (is-robot-finish? 4)
-          [ report true ]
-          [ report (not any? robots4-on p) ]
-        ]
-        [
-          ifelse (is-robot-finish? 4)
-          [ report (not any? robots3-on p) ]
-          [ report (not any? robots3-on p) and (not any? robots4-on p) ]
-        ]
-
-      ] [
-        ifelse (is-robot-finish? 3) [
-          ifelse (is-robot-finish? 4)
-          [ report (not any? robots-on p) ]
-          [ report (not any? robots-on p) and (not any? robots4-on p) ]
-        ] [
-          ifelse (is-robot-finish? 4) [
-            report (not any? robots-on p) and (not any? robots3-on p)
-          ] [
-             report (not any? robots-on p) and (not any? robots3-on p) and (not any? robots4-on p)
-          ]
-              ]
-            ]
-          ]
-     [
-       ifelse (n = 3) and ( [ pcolor ] of p = black or is-finish? p) [      ; -------------------------- robot 3
-        ifelse (is-robot-finish? 1) [
-          ifelse (is-robot-finish? 2)
-          [ ifelse (is-robot-finish? 4)
-            [ report true ]
-            [ report (not any? robots4-on p) ]
-          ]
-          [
-             ifelse (is-robot-finish? 4)
-             [ report (not any? robots2-on p) ]
-             [ report (not any? robots2-on p) and (not any? robots4-on p) ]
-          ]
-        ] [
-          ifelse (is-robot-finish? 2) [
-            ifelse (is-robot-finish? 4)
-            [ report (not any? robots-on p) ]
-            [ report (not any? robots-on p) and (not any? robots4-on p) ]
-          ] [
-            ifelse (is-robot-finish? 4) [
-              report (not any? robots-on p) and (not any? robots2-on p)
-            ] [
-                    report (not any? robots-on p) and (not any? robots2-on p) and (not any? robots4-on p)
-                  ]
-                ]
-              ]
-            ]
-     [
-       ifelse (n = 4) and ( [ pcolor ] of p = black or is-finish? p) [      ; -------------------------- robot 4
-        ifelse (is-robot-finish? 1) [
-          ifelse (is-robot-finish? 2)
-          [ ifelse (is-robot-finish? 3)
-            [ report true ]
-            [ report (not any? robots3-on p) ]
-          ]
-          [
-             ifelse (is-robot-finish? 3)
-             [ report (not any? robots2-on p) ]
-             [ report (not any? robots2-on p) and (not any? robots3-on p) ]
-          ]
-        ] [
-          ifelse (is-robot-finish? 2) [
-            ifelse (is-robot-finish? 3)
-            [ report (not any? robots-on p) ]
-            [ report (not any? robots-on p) and (not any? robots3-on p) ]
-          ] [
-            ifelse (is-robot-finish? 3) [
-              report (not any? robots-on p) and (not any? robots2-on p)
-            ] [
-                    report (not any? robots-on p) and (not any? robots2-on p) and (not any? robots3-on p)
-                  ]
-                ]
-              ]
-            ] [
-              report ([pcolor] of p = black) or ([pcolor] of p = red)  and (not any? robots-on p) and (not any? robots2-on p) and (not any? robots3-on p) and (not any? robots4-on p)
-           ]
-     ]
-    ]
-  ]
+  if (n = 1) [ report ([pcolor] of p = black) or ([pcolor] of p = red) and (not any? robots2-on p) and (not any? robots3-on p) and (not any? robots4-on p) ]
+  if (n = 2) [ report ([pcolor] of p = black) or ([pcolor] of p = red)  and (not any? robots-on p) and (not any? robots3-on p) and (not any? robots4-on p) ]
+  if (n = 3) [ report ([pcolor] of p = black) or ([pcolor] of p = red)  and (not any? robots2-on p) and (not any? robots-on p) and (not any? robots4-on p) ]
+  if (n = 4) [ report ([pcolor] of p = black) or ([pcolor] of p = red)  and (not any? robots2-on p) and (not any? robots3-on p) and (not any? robots-on p) ]
 end
 
 to-report is-finish? [p]
@@ -485,7 +415,7 @@ to setup-robot
   let pos-x random-pos-x
   let pos-y random-pos-y
   ask robot 0 [ setxy pos-x pos-y]
-  let robot-color 0 ;+ random 2
+  let robot-color 0 + random 2
   ask robots [ setup-part 1 robot-color ]
 
   create-robots2 num-of-parts
@@ -497,7 +427,7 @@ to setup-robot
         set pos-y random-pos-y]
   ]
   ask robotB 4 [ setxy pos-x pos-y ]
-  set robot-color 2 ;+ random 2
+  set robot-color 2 + random 2
   ask robots2 [ setup-part 2 robot-color ]
 
   create-robots3 num-of-parts
@@ -509,7 +439,7 @@ to setup-robot
         set pos-y random-pos-y]
   ]
   ask robotC 8 [ setxy pos-x pos-y ]
-  set robot-color 4 ;+ random 2
+  set robot-color 4 + random 2
   ask robots3 [ setup-part 3 robot-color ]
 
   create-robots4 num-of-parts
@@ -521,7 +451,7 @@ to setup-robot
         set pos-y random-pos-y]
   ]
   ask robotD 12 [ setxy pos-x pos-y ]
-  set robot-color 6 ;+ random 2
+  set robot-color 6 + random 2
   ask robots4 [ setup-part 4 robot-color ]
 end
 
@@ -582,17 +512,8 @@ to do-flood-fill
       add-possible-neighbor
     ]
 
-    ask turtle 0 [ set dist [plabel] of patch-here]
-    ask turtle 4 [ set dist [plabel] of patch-here]
-    ask turtle 8 [ set dist [plabel] of patch-here]
-    ask turtle 12 [ set dist [plabel] of patch-here]
-
     set is-computed? true
-;    output-print "Total distance :"
-;    ask turtle 0 [ output-print dist]
-;    ask turtle 4 [ output-print dist]
-;    ask turtle 8 [ output-print dist]
-;    ask turtle 12 [ output-print dist]
+    print "flood-filling finished"
   ]
 end
 
@@ -1005,7 +926,7 @@ PLOT
 188
 322
 338
-Distance
+plot 1
 time
 distance
 0.0
@@ -1021,8 +942,8 @@ PENS
 OUTPUT
 24
 356
-326
-440
+320
+424
 11
 
 @#$#@#$#@
