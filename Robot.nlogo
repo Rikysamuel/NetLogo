@@ -1,5 +1,3 @@
-extensions [ array ]
-
 breed [ robots robot ]
 breed [ robots2 robotB ]
 breed [ robots3 robotC ]
@@ -9,7 +7,6 @@ globals [
   list-goal
   draw?
   num-of-parts
-  map-mx
   is-computed?
   is-init?
   dist-robot1
@@ -19,7 +16,7 @@ globals [
 ]
 
 turtles-own [
-  x y finish dist stuck direction
+  x y finish direction
 ]
 
 ;;;;;;;;;;;;;;;;;;;;;;;;
@@ -50,20 +47,6 @@ end
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Interface Buttons ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;
-to rotate-right [n] ;; n indicates which robot (1,2,3,4)
-  if rotate-right-clear? n
-    [ ask robots [ rotate-me-right ] ]
-end
-
-to rotate-me-right  ;; Piece Procedure
-  let oldx x
-  let oldy y
-  set x oldy
-  set y (- oldx)
-  set xcor ([xcor] of turtle 0) + x
-  set ycor ([ycor] of turtle 0) + y
-end
-
 to rotate-left [n] ;; n indicates which robot (1,2,3,4)
   if (n = 1) and rotate-left-clear? 1 [  ask robots [ rotate-me-left n ] ]
   if (n = 2) and rotate-left-clear? 2 [  ask robots2 [ rotate-me-left n] ]
@@ -136,7 +119,6 @@ end
 
 to-report shift-upright-clear? [n]
   report (clear-at? n 1 1)
-  ;(clear-at? n 0 1) and (clear-at? n 1 0) and
 end
 
 to shift-upright [n]
@@ -150,7 +132,6 @@ end
 
 to-report shift-upleft-clear? [n]
   report (clear-at? n -1 1)
-  ;(clear-at? n 0 1) and (clear-at? n -1 0)
 end
 
 to shift-upleft [n]
@@ -164,7 +145,6 @@ end
 
 to-report shift-downright-clear? [n]
   report (clear-at? n 1 -1)
-  ;(clear-at? n 0 -1) and (clear-at? n 1 0) and
 end
 
 to shift-downright [n]
@@ -178,7 +158,6 @@ end
 
 to-report shift-downleft-clear? [n]
   report (clear-at? n -1 -1)
-  ;(clear-at? n 0 -1) and (clear-at? n -1 0) and
 end
 
 to shift-downleft [n]
@@ -197,8 +176,6 @@ to draw
   if mouse-down?
     [
       ask patch mouse-xcor mouse-ycor [set pcolor white]
-      ;ask patches
-      ;matrix:set map-mx (center-to-edge-y mouse-ycor) (center-to-edge-x mouse-xcor) 999
     ]
   display
 end
@@ -409,7 +386,6 @@ end
 
 to-report is-clear? [p]
   let str [ plabel ] of p
-  ;ifelse ( str = "" ) and ( [ pcolor ] of p != gray ) and ( [ pcolor ] of p != white )
   ifelse ( str = "" ) and ( [ plabel ] of p != 999 )
     [ report true ] [ report false ]
 end
@@ -525,11 +501,11 @@ end
 ;; L-Block
 ;; 201
 ;; 3
-to setup-l [n]  ;;Piece Procedure, n inidicates which robots (1, 2, 3, 4)
-  if (who = 0 + (n * num-of-parts - num-of-parts)) [ set finish false set stuck 0 set direction 1 ]
-  if (who = 1 + (n * num-of-parts - num-of-parts)) [ set x  1 set y  0 set finish false set stuck 0 set direction 1 ]
-  if (who = 2 + (n * num-of-parts - num-of-parts)) [ set x -1 set y  0 set finish false set stuck 0 set direction 1 ]
-  if (who = 3 + (n * num-of-parts - num-of-parts)) [ set x -1 set y -1 set finish false set stuck 0 set direction 1 ]
+to setup-l [n]  ;;Parts Procedure, n inidicates which robots (1, 2, 3, 4)
+  if (who = 0 + (n * num-of-parts - num-of-parts)) [ set finish false set direction 1 ]
+  if (who = 1 + (n * num-of-parts - num-of-parts)) [ set x  1 set y  0 set finish false set direction 1 ]
+  if (who = 2 + (n * num-of-parts - num-of-parts)) [ set x -1 set y  0 set finish false set direction 1 ]
+  if (who = 3 + (n * num-of-parts - num-of-parts)) [ set x -1 set y -1 set finish false set direction 1 ]
 end
 
 to do-flood-fill
@@ -537,11 +513,6 @@ to do-flood-fill
     while [not empty? list-goal] [
       add-possible-neighbor
     ]
-
-    ask turtle 0 [ set dist [plabel] of patch-here]
-    ask turtle 4 [ set dist [plabel] of patch-here]
-    ask turtle 8 [ set dist [plabel] of patch-here]
-    ask turtle 12 [ set dist [plabel] of patch-here]
 
     set is-computed? true
   ]
