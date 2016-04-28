@@ -292,11 +292,32 @@ to-report clear? [p n]  ;; p is a patch, n indicates which robot (1,2,3,4)
                 ]
               ]
             ]
-
-
-
      [
-       report ([pcolor] of p = black) or ([pcolor] of p = red)  and (not any? robots2-on p) and (not any? robots3-on p) and (not any? robots-on p)
+       ifelse (n = 4) and ( [ pcolor ] of p = black or is-finish? p) [      ; -------------------------- robot 4
+        ifelse (is-robot-finish? 1) [
+          ifelse (is-robot-finish? 2)
+          [ report (not any? robots3-on p) ]
+          [
+             ifelse (is-robot-finish? 3)
+             [ report (not any? robots2-on p) ]
+             [ report (not any? robots2-on p) and (not any? robots3-on p) ]
+          ]
+        ] [
+          ifelse (is-robot-finish? 2) [
+            ifelse (is-robot-finish? 3)
+            [ report (not any? robots-on p) ]
+            [ report (not any? robots-on p) and (not any? robots3-on p) ]
+          ] [
+            ifelse (is-robot-finish? 3) [
+              report (not any? robots-on p) and (not any? robots2-on p)
+            ] [
+                    report (not any? robots-on p) and (not any? robots2-on p) and (not any? robots3-on p)
+                  ]
+                ]
+              ]
+            ] [
+              report ([pcolor] of p = black) or ([pcolor] of p = red)  and (not any? robots-on p) and (not any? robots2-on p) and (not any? robots3-on p) and (not any? robots4-on p)
+           ]
      ]
     ]
   ]
@@ -455,7 +476,7 @@ to find-goal
   ]
 
   if (not is-robot-finish? 4) [
-    ;move 4
+    move 4
   ]
 end
 
