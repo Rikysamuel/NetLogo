@@ -1,5 +1,4 @@
-extensions [ array ]
-extensions [ matrix ]
+extensions [ shell matrix]
 breed [ robots robot ]
 breed [ robots2 robotB ]
 breed [ robots3 robotC ]
