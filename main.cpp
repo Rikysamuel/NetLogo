@@ -246,7 +246,6 @@ int main() {
     	State state = find_start(grid, sym_start);
 
     	state.cost = matx_min_cost[state.pattern][state.pos.a][state.pos.b];
-    	bool has_rotate = false;
     	while (state.cost > 0) {
     		ii &pos = state.pos;
     		bool can_move = false;
@@ -256,10 +255,6 @@ int main() {
     			if (check_oob(grid, new_pos))
     				continue;
     			if (state.cost > matx_min_cost[state.pattern][new_pos.a][new_pos.b]) {
-    				if (has_rotate) {
-    					path += ('A'+state.pattern);
-    					has_rotate = false;
-    				}
     				can_move = true;
     				state.cost = matx_min_cost[state.pattern][new_pos.a][new_pos.b];
     				path += mov_char[mov_idx];
@@ -268,7 +263,7 @@ int main() {
     			}
     		}
     		if (!can_move) {
-    			has_rotate = true;
+    			path += 'R';
     			state.pattern = (state.pattern+1)%N_PATTERN;
     		}
     	}
