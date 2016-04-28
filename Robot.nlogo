@@ -9,7 +9,6 @@ globals [
   second-robot-steps
   third-robot-steps
   fourth-robot-steps
-  finish
   list-goal
   draw?
   num-of-parts
@@ -24,7 +23,7 @@ globals [
 ]
 
 turtles-own [
-  x y
+  x y finish dist stuck direction
 ]
 
 ;;;;;;;;;;;;;;;;;;;;;;;;
@@ -81,17 +80,19 @@ to rotate-me-right  ;; Piece Procedure
 end
 
 to rotate-left [n] ;; n indicates which robot (1,2,3,4)
-  if rotate-left-clear? n
-    [ ask robots [ rotate-me-left ] ]
+  if (n = 1) and rotate-left-clear? 1 [  ask robots [ rotate-me-left n ] ]
+  if (n = 2) and rotate-left-clear? 2 [  ask robots2 [ rotate-me-left n] ]
+  if (n = 3) and rotate-left-clear? 3 [  ask robots3 [ rotate-me-left n] ]
+  if (n = 4) and rotate-left-clear? 4 [  ask robots4 [ rotate-me-left n] ]
 end
 
-to rotate-me-left  ;; Piece Procedure
+to rotate-me-left [n] ;; Piece Procedure
   let oldx x
   let oldy y
   set x (- oldy)
   set y oldx
-  set xcor ([xcor] of turtle 0) + x
-  set ycor ([ycor] of turtle 0) + y
+  set xcor ([xcor] of turtle ((n - 1) * num-of-parts)) + x
+  set ycor ([ycor] of turtle ((n - 1) * num-of-parts)) + y
 end
 
 to-report shift-right-clear? [n]
@@ -229,21 +230,15 @@ to draw-goal
 end
 
 to go
-;  if (is-robot-finish? 1) and (is-robot-finish? 2) and (is-robot-finish? 3) and (is-robot-finish? 4) [
-;    output-print "Total distance :"
-;    ask turtle 0 [ output-print dist]
-;    ask turtle 4 [ output-print dist]
-;    ask turtle 8 [ output-print dist]
-;    ask turtle 12 [ output-print dist]
-;    stop
-;  ]
   if (is-robot-finish? 1) and (is-robot-finish? 2) and (is-robot-finish? 3) and (is-robot-finish? 4) [
+    output-print "Total distance :"
     ask turtle 0 [ output-print dist-robot1]
     ask turtle 4 [ output-print dist-robot2]
     ask turtle 8 [ output-print dist-robot3]
     ask turtle 12 [ output-print dist-robot4]
     stop
   ]
+
   set-obstacle-and-goal
 ;  create-virtual-obs
 ;  do-flood-fill
@@ -514,7 +509,10 @@ to-report clear-at? [n xoff yoff]
 end
 
 to-report rotate-left-clear? [n] ;; n indicates which robot (1,2,3,4)
-  report all? robots [clear? patch-at (- y) x n]
+  if (n = 1) [report all? robots [clear? patch-at (- y) x n]]
+  if (n = 2) [report all? robots2 [clear? patch-at (- y) x n]]
+  if (n = 3) [report all? robots3 [clear? patch-at (- y) x n]]
+  if (n = 4) [report all? robots4 [clear? patch-at (- y) x n]]
 end
 
 to-report rotate-right-clear? [n] ;; n indicates which robot (1,2,3,4)
@@ -585,7 +583,7 @@ to setup-robot
   let pos-x random-pos-x
   let pos-y random-pos-y
   ask robot 0 [ setxy pos-x pos-y]
-  let robot-color 0 + random 2
+  let robot-color 0
   ask robots [ setup-part 1 robot-color ]
 
   create-robots2 num-of-parts
@@ -597,7 +595,7 @@ to setup-robot
         set pos-y random-pos-y]
   ]
   ask robotB 4 [ setxy pos-x pos-y ]
-  set robot-color 2 + random 2
+  set robot-color 2
   ask robots2 [ setup-part 2 robot-color ]
 
   create-robots3 num-of-parts
@@ -609,7 +607,7 @@ to setup-robot
         set pos-y random-pos-y]
   ]
   ask robotC 8 [ setxy pos-x pos-y ]
-  set robot-color 4 + random 2
+  set robot-color 4
   ask robots3 [ setup-part 3 robot-color ]
 
   create-robots4 num-of-parts
@@ -621,7 +619,7 @@ to setup-robot
         set pos-y random-pos-y]
   ]
   ask robotD 12 [ setxy pos-x pos-y ]
-  set robot-color 6 + random 2
+  set robot-color 6
   ask robots4 [ setup-part 4 robot-color ]
 end
 
@@ -670,10 +668,10 @@ end
 ;; 201
 ;; 3
 to setup-l [n]  ;;Piece Procedure, n inidicates which robots (1, 2, 3, 4)
-  if (who = 0 + (n * num-of-parts - num-of-parts)) [ set finish false ]
-  if (who = 1 + (n * num-of-parts - num-of-parts)) [ set x  1 set y  0 set finish false ]
-  if (who = 2 + (n * num-of-parts - num-of-parts)) [ set x -1 set y  0 set finish false ]
-  if (who = 3 + (n * num-of-parts - num-of-parts)) [ set x -1 set y -1 set finish false ]
+  if (who = 0 + (n * num-of-parts - num-of-parts)) [ set finish false set stuck 0 set direction 1 ]
+  if (who = 1 + (n * num-of-parts - num-of-parts)) [ set x  1 set y  0 set finish false set stuck 0 set direction 1 ]
+  if (who = 2 + (n * num-of-parts - num-of-parts)) [ set x -1 set y  0 set finish false set stuck 0 set direction 1 ]
+  if (who = 3 + (n * num-of-parts - num-of-parts)) [ set x -1 set y -1 set finish false set stuck 0 set direction 1 ]
 end
 
 to do-flood-fill
@@ -801,8 +799,7 @@ to move [n] ; n indicates which robot (1 2 3 4)
     set is-moved? true
   ]
 
-  if is-moved? [
-    print "masuk moved"
+  ifelse is-moved? [
     if (n = 1) [
       set dist-robot1 (dist-robot1 + 1)
       ask turtle 0 [pen-down]
@@ -819,7 +816,16 @@ to move [n] ; n indicates which robot (1 2 3 4)
       set dist-robot4 (dist-robot4 + 1)
       ask turtle 12 [pen-down]
     ]
+  ] [
+    ask turtle ((n - 1) * num-of-parts) [ move-stucked n direction set direction (direction + 1) rotate-left n]
   ]
+end
+
+to move-stucked [n dir]
+  if ((dir mod 4) = 0) [ if (clear-at? n 1 0) and (clear-at? n 2 0) [ shift-right n shift-right n ] ]
+  if ((dir mod 4) = 1) [ if (clear-at? n 0 -1) and (clear-at? n 0 -2) [ shift-down n shift-down n ] ]
+  if ((dir mod 4) = 2) [ if (clear-at? n -1 0) and (clear-at? n -2 0) [ shift-left n shift-left n ] print "masuk left"]
+  if ((dir mod 4) = 3) [ if (clear-at? n 0 1) and (clear-at? n 0 2) [ shift-up n shift-up n ] print "masuk up"]
 end
 
 to create-virtual-obs
@@ -1146,10 +1152,10 @@ true
 true
 "" ""
 PENS
-"robot 1" 1.0 0 -1184463 true "" "plot dist-robot1"
-"robot 2" 1.0 0 -7500403 true "" "plot dist-robot2"
-"robot 3" 1.0 0 -2674135 true "" "plot dist-robot3"
-"robot 4" 1.0 0 -955883 true "" "plot dist-robot4"
+"robot 1" 1.0 0 -13345367 true "" "plot dist-robot1"
+"robot 2" 1.0 0 -1184463 true "" "plot dist-robot2"
+"robot 3" 1.0 0 -955883 true "" "plot dist-robot3"
+"robot 4" 1.0 0 -8630108 true "" "plot dist-robot4"
 
 OUTPUT
 24
