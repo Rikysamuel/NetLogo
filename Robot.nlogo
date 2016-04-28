@@ -219,8 +219,129 @@ to go
 ;  do-flood-fill
 ;  ask turtles [ find-goal ]
   call-command-line
-;  display
+  process-steps
+  display
 end
+
+to process-steps
+  if (not is-robot-finish? 1) [
+    move-new 1
+  ]
+
+  if (not is-robot-finish? 2) [
+    move-new 2
+  ]
+
+  if (not is-robot-finish? 3) [
+    move-new 3
+  ]
+
+  if (not is-robot-finish? 4) [
+    move-new 4
+  ]
+end
+
+
+
+to move-new [n] ; n indicates which robot (1 2 3 4)
+  let cur-plabel [ plabel ] of turtle ((n - 1) * 4)
+  let cur-x [ xcor ] of turtle ((n - 1) * 4)
+  let cur-y [ ycor ] of turtle ((n - 1) * 4)
+  let is-moved? false
+  let movement 0
+  ifelse (n = 1) [
+
+    ifelse (not empty? first-robot-steps) [
+      set movement substring first-robot-steps 0 1
+      set first-robot-steps substring first-robot-steps 1 (length first-robot-steps)
+    ] [
+
+    ]
+  ][
+    ifelse (n = 2) [
+      ifelse (not empty? second-robot-steps) [
+        set movement substring second-robot-steps 0 1
+        set second-robot-steps substring second-robot-steps 1 (length second-robot-steps)
+      ][
+
+      ]
+    ] [
+      ifelse (n = 3) [
+
+        ifelse (not empty? third-robot-steps) [
+          set movement substring third-robot-steps 0 1
+          set third-robot-steps substring third-robot-steps 1 (length third-robot-steps)
+        ][
+        ]
+      ] [
+        ifelse (not empty? fourth-robot-steps) [
+          set movement substring fourth-robot-steps 0 1
+          set fourth-robot-steps substring fourth-robot-steps 1 (length fourth-robot-steps)
+        ][
+        ]
+      ]
+
+    ]
+  ]
+;  if (movement != 0) [
+;    print movement
+;    let tmp (movement = "1")
+;    print tmp
+;  ]
+  if ((movement = "1") and (not is-moved?)) [
+;    print "panggil1"
+    shift-upleft n
+    set is-moved? true
+  ]
+  if ((movement = "2") and not is-moved?) [
+;    print "panggil2"
+    shift-up n
+    set is-moved? true
+  ]
+
+  if ((movement = "3") and not is-moved?) [
+;    print "panggil3"
+    shift-upright n
+    set is-moved? true
+  ]
+
+  if ((movement = "4") and not is-moved?) [
+;    print "panggil4"
+    shift-left n
+    set is-moved? true
+  ]
+
+  if ((movement = "6") and not is-moved?) [
+;    print "panggil6"
+    shift-right n
+    set is-moved? true
+  ]
+
+  if ((movement = "7") and not is-moved?) [
+;    print "panggil7"
+    shift-downleft n
+    set is-moved? true
+  ]
+
+  if ((movement = "8") and not is-moved?) [
+;    print "panggil8"
+    shift-down n
+    set is-moved? true
+  ]
+
+  if ((movement = "9") and not is-moved?) [
+    shift-downright n
+;    print "panggil9"
+    set is-moved? true
+  ]
+
+  if ((movement = "R") and not is-moved?) [
+    rotate-right n
+;    print "panggilR"
+    set is-moved? true
+  ]
+end
+
 
 to call-command-line
   if (not is-command-line-called?) [
@@ -315,10 +436,6 @@ to call-command-line
     print fourth-robot-steps
 
   ]
-end
-
-to split-on-string [par char]
-
 end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
