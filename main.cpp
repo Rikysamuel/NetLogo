@@ -80,7 +80,7 @@ struct State {
 
 #define N_PATTERN 4
 
-const bool pattern_form[N_PATTERN][9] = {
+const bool pattern_forms[N_PATTERN][9] = {
 	{
 		false, false, true,
 		true, true, true,
@@ -113,11 +113,27 @@ bool is_valid(const vs& grid, State &state) {
 	ii &loc = state.pos; 
 	int pattern = state.pattern;
 	for (int dir_part_idx = 0; dir_part_idx < 9; ++dir_part_idx) {
-		if (!pattern_form[pattern][dir_part_idx]) { // there is no part of the object in there
+		if (!pattern_forms[pattern][dir_part_idx]) { // there is no part of the object in there
 			continue;
 		}
 		ii new_loc(loc.a+dir_part_y[dir_part_idx], loc.b+dir_part_x[dir_part_idx]);
 		if ((check_oob(grid, new_loc)) or (grid[new_loc.a][new_loc.b] == OBS_CHAR))
+			return false;
+
+	}
+	return true;
+}
+
+// check if it is over the boundary of map (edge and )
+bool is_valid_no_obs(const vs& grid, State &state, char allowed_path) {
+	ii &loc = state.pos; 
+	int pattern = state.pattern;
+	for (int dir_part_idx = 0; dir_part_idx < 9; ++dir_part_idx) {
+		if (!pattern_forms[pattern][dir_part_idx]) { // there is no part of the object in there
+			continue;
+		}
+		ii new_loc(loc.a+dir_part_y[dir_part_idx], loc.b+dir_part_x[dir_part_idx]);
+		if ((check_oob(grid, new_loc)) or (grid[new_loc.a][new_loc.b] != allowed_path))
 			return false;
 
 	}
@@ -214,8 +230,20 @@ State find_start(const vs &grid, char sym_start) {
 
 char mov_char[] = {'1', '2', '3', '4', '6', '7', '8', '9'};
 
+void replace(vs &grid, State &node, char rep) {
+	ii pos = node.pos;
+	const bool *pattern_form = pattern_forms[node.pattern];
+	for (int idx = 0; idx < 9; ++idx) {
+		if (!pattern_form[idx]) // that part exist
+			continue;
+		ii new_pos(pos.a+dir_part_y[idx], pos.b+dir_part_x[idx]);
+		grid[new_pos.a][new_pos.b] = rep; // replace it with desired char
+	}
+}
+
 int main() {
 	freopen("test.in", "r", stdin);
+
     int n_row, n_col;
     scanf("%d %d%*c", &n_row, &n_col);
     
@@ -239,6 +267,8 @@ int main() {
 
     int n_syms = 4;
     char syms_start[] = {'1', '2', '3', '4'};
+
+    string l_ans[4];
     for (int sym_idx = 0; sym_idx < n_syms; ++sym_idx) {
     	char &sym_start = syms_start[sym_idx];
     	string path = "";
@@ -268,22 +298,61 @@ int main() {
     		}
     	}
 
-    	cout << path << endl; // output answer
+    	l_ans[sym_idx] = path;
     }
 
-    // int pattern = 0;
+    grid[goal.a][goal.b] = '.';
 
-    // for (int i = 0; i < n_row; ++i) {
-    // 	for (int j = 0; j < n_col; ++j) {
-    // 		if (j)
-    // 			printf(" ");
-    // 		if (matx_min_cost[pattern][i][j] == INF)
-    // 			printf("-");
-    // 		else
-    // 			printf("%d", matx_min_cost[pattern][i][j]);
-    // 	}
-    // 	printf("\n");
-    // }
+    int used_indices[4] = {0};
+    int need_moved = 0;
+    vector<State> l_states;
+    for (int sym_idx = 0; sym_idx < n_syms; ++sym_idx) {
+    	char &sym_start = syms_start[sym_idx];
+    	need_moved += l_ans[sym_idx].length();
+    	l_states.pub(find_start(grid, sym_start));
+    }
+
+    string l_ans_no_overlapped[4];
+    while (need_moved > 0) {
+    	for (int sym_idx = 0; sym_idx < n_syms; ++sym_idx) {
+    		int &used_idx = used_indices[sym_idx];
+    		string &ans = l_ans[sym_idx];
+    		if (used_idx == ans.length()) {
+    			continue;
+    		}
+
+    		State &l_state = l_states[sym_idx];
+
+    		State new_state = l_state;
+    		char cmd_mov = ans[used_idx];
+    		if (cmd_mov != 'R') {
+	    		int mov_idx = cmd_mov-'1';
+	    		ii &pos = new_state.pos;
+	    		pos.a += mov_y[mov_idx];
+	    		pos.b += mov_x[mov_idx];
+    		} else {
+    			new_state.pattern = (new_state.pattern+1)%4;
+    		}
+    		
+    		string &ans_no_overlaped = l_ans_no_overlapped[sym_idx];
+    		replace(grid, l_state, '.');
+    		if (!is_valid_no_obs(grid, new_state, '.')) {
+    			replace(grid, l_state, '1'+sym_idx);
+    			ans_no_overlaped += 'W';
+    			continue;
+    		}
+    		used_idx++;
+    		if (used_idx != ans.length())
+    			replace(grid, new_state, '1'+sym_idx);
+    		l_state = new_state;
+    		ans_no_overlaped += cmd_mov;
+    		need_moved--;
+    	}
+    }
+
+    for (int idx = 0; idx < n_syms; ++idx) {
+    	cout << l_ans_no_overlapped[idx] << endl;
+    }
 
     return 0;
 }
