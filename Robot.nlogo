@@ -1,5 +1,5 @@
 extensions [ array ]
-
+extensions [ matrix ]
 breed [ robots robot ]
 breed [ robots2 robotB ]
 breed [ robots3 robotC ]
@@ -15,6 +15,7 @@ globals [
   map-mx
   is-computed?
   is-init?
+  is-command-line-called?
 ]
 
 turtles-own [
@@ -32,6 +33,7 @@ to Initiate
   set is-computed? false
   set is-init? false
   set list-goal []
+  set is-command-line-called? false
 
   ;; draw the board
   ask patches
@@ -41,6 +43,7 @@ to Initiate
 
   reset-ticks
 end
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Interface Buttons ;;;
@@ -209,10 +212,72 @@ end
 
 to go
   set-obstacle-and-goal
-  create-virtual-obs
-  do-flood-fill
-  ask turtles [ find-goal ]
-  display
+;  create-virtual-obs
+;  do-flood-fill
+;  ask turtles [ find-goal ]
+  call-command-line
+;  display
+end
+
+to call-command-line
+  if (not is-command-line-called?) [
+    set is-command-line-called? true
+    let arr matrix:make-constant 23 43 111 ;default bs jalan kodenya 111
+
+    let turtle-idx 0
+    ;turtle
+    while [turtle-idx <= 15] [
+      let x-turtle-idx [xcor] of turtle (turtle-idx)
+      let y-turtle-idx [ycor] of turtle (turtle-idx)
+      matrix:set arr (y-turtle-idx + 11) (x-turtle-idx + 21) (int (turtle-idx / 4) + 1)
+
+      print (int (turtle-idx / 4) + 1)
+
+      set turtle-idx (turtle-idx + 1)
+    ]
+
+    ;goal
+    let set-goal (patches with [pcolor = red])
+    ask set-goal [
+      matrix:set arr (pycor + 11) (pxcor + 21) 10 ;kode untuk goal = 10
+    ]
+    let set-border (patches with [plabel = 999])
+    ask set-border [
+      if (pxcor >= -21 and pxcor <= 21 and pycor >= -11 and pycor <= 11) [
+        matrix:set arr (pycor + 11) (pxcor + 21) 999 ;kode untuk goal = 10
+      ]
+    ]
+    let i-idx 22 ;sampai 0
+    let j-idx 0 ;sampai 11
+    let tmpstr "22 43\n"
+
+    while [i-idx >= 0] [
+      while [j-idx <= 42] [
+
+        let cur-val matrix:get arr i-idx j-idx
+        ifelse (cur-val = 999)[
+          set tmpstr (word tmpstr "#")
+        ] [
+          ifelse (cur-val = 10) [
+            set tmpstr (word tmpstr "G")
+          ] [
+            ifelse (cur-val = 111) [
+              set tmpstr (word tmpstr ".")
+            ] [
+              set tmpstr (word tmpstr cur-val)
+            ]
+          ]
+        ]
+
+        set j-idx (j-idx + 1)
+      ]
+      set tmpstr (word tmpstr "\n")
+      set i-idx (i-idx - 1)
+      set j-idx 0
+    ]
+    print tmpstr
+
+  ]
 end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
