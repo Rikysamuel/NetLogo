@@ -102,7 +102,7 @@ to shift-left [n]
 end
 
 to-report shift-down-clear? [n]
-  report clear-at? 1 0 -1
+  report clear-at? n 0 -1
 end
 
 to shift-down [n]
@@ -115,7 +115,7 @@ to shift-down [n]
 end
 
 to-report shift-up-clear? [n]
-  report clear-at? 1 0 1
+  report clear-at? n 0 1
 end
 
 to shift-up [n]
@@ -128,7 +128,7 @@ to shift-up [n]
 end
 
 to-report shift-upright-clear? [n]
-  report (clear-at? 1 0 1) and (clear-at? 1 1 0)
+  report (clear-at? n 0 1) and (clear-at? n 1 0)
 end
 
 to shift-upright [n]
@@ -141,7 +141,7 @@ to shift-upright [n]
 end
 
 to-report shift-upleft-clear? [n]
-  report (clear-at? 1 0 1) and (clear-at? 1 -1 0)
+  report (clear-at? n 0 1) and (clear-at? n -1 0)
 end
 
 to shift-upleft [n]
@@ -154,7 +154,7 @@ to shift-upleft [n]
 end
 
 to-report shift-downright-clear? [n]
-  report (clear-at? 1 0 -1) and (clear-at? 1 1 0)
+  report (clear-at? n 0 -1) and (clear-at? n 1 0)
 end
 
 to shift-downright [n]
@@ -167,7 +167,7 @@ to shift-downright [n]
 end
 
 to-report shift-downleft-clear? [n]
-  report (clear-at? 1 0 -1) and (clear-at? 1 -1 0)
+  report (clear-at? n 0 -1) and (clear-at? n -1 0)
 end
 
 to shift-downleft [n]
@@ -591,7 +591,7 @@ BUTTON
 1272
 253
 Right
-shift-right 2
+shift-right 3
 NIL
 1
 T
@@ -608,7 +608,7 @@ BUTTON
 1154
 253
 Left
-shift-left 2
+shift-left 3
 NIL
 1
 T
@@ -665,7 +665,7 @@ T
 T
 OBSERVER
 NIL
-D
+NIL
 NIL
 NIL
 0
@@ -676,7 +676,7 @@ BUTTON
 1217
 253
 Down
-shift-down 2
+shift-down 3
 NIL
 1
 T
@@ -693,7 +693,7 @@ BUTTON
 1217
 221
 Up
-shift-up 2
+shift-up 3
 NIL
 1
 T
