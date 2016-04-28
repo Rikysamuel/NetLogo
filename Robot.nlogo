@@ -128,7 +128,7 @@ to shift-up [n]
 end
 
 to-report shift-upright-clear? [n]
-  report (clear-at? n 0 1) and (clear-at? n 1 0)
+  report (clear-at? n 0 1) and (clear-at? n 1 0) and (clear-at? n 1 1)
 end
 
 to shift-upright [n]
@@ -141,7 +141,7 @@ to shift-upright [n]
 end
 
 to-report shift-upleft-clear? [n]
-  report (clear-at? n 0 1) and (clear-at? n -1 0)
+  report (clear-at? n 0 1) and (clear-at? n -1 0) and (clear-at? n -1 1)
 end
 
 to shift-upleft [n]
@@ -154,7 +154,7 @@ to shift-upleft [n]
 end
 
 to-report shift-downright-clear? [n]
-  report (clear-at? n 0 -1) and (clear-at? n 1 0)
+  report (clear-at? n 0 -1) and (clear-at? n 1 0) and (clear-at? n 1 -1)
 end
 
 to shift-downright [n]
@@ -167,7 +167,7 @@ to shift-downright [n]
 end
 
 to-report shift-downleft-clear? [n]
-  report (clear-at? n 0 -1) and (clear-at? n -1 0)
+  report (clear-at? n 0 -1) and (clear-at? n -1 0) and (clear-at? n -1 -1)
 end
 
 to shift-downleft [n]
@@ -205,6 +205,7 @@ end
 
 to go
   set-obstacle-and-goal
+  create-virtual-obs
   do-flood-fill
   ask turtles [ find-goal ]
   display
@@ -272,7 +273,8 @@ end
 
 to-report is-clear? [p]
   let str [ plabel ] of p
-  ifelse ( str = "" ) and ( [ pcolor ] of p != gray ) and ( [ pcolor ] of p != white )
+  ;ifelse ( str = "" ) and ( [ pcolor ] of p != gray ) and ( [ pcolor ] of p != white )
+  ifelse ( str = "" ) and ( [ plabel ] of p != 999 )
     [ report true ] [ report false ]
 end
 
@@ -362,39 +364,18 @@ end
 to find-goal
   if (not is-robot-finish? 1) [
     move 1
-;    if shift-left-clear? 1 [
-;      shift-left 1
-;    ]
   ]
 
   if (not is-robot-finish? 2) [
     move 2
-;    shift-left 2
-;    shift-down 2
-
-;    if shift-upleft-clear? 2 [
-;      shift-upleft 2
-;    ]
   ]
 
   if (not is-robot-finish? 3) [
     move 3
-;    shift-left 3
-;    shift-down 3
-
-;    if shift-downright-clear? 3 [
-;      shift-up 3
-;    ]
   ]
 
   if (not is-robot-finish? 4) [
     move 4
-;      shift-left 4
-;      shift-down 4
-
-;      if shift-downleft-clear? 4 [
-;        shift-down 4
-;      ]
   ]
 end
 
@@ -460,6 +441,11 @@ to set-obstacle-and-goal
       set plabel-color red
     ]
 
+    ask set-border [
+      set plabel 999
+      set plabel-color red
+    ]
+
     ask set-goal [
       set list-goal lput self list-goal
       set plabel 0
@@ -478,66 +464,95 @@ to set-robot-finish [n] ; n indicates which robot (1, 2, 3,4)
 end
 
 to move [n] ; n indicates which robot (1 2 3 4)
-;  print "masuk moveee"
   let cur-plabel [ plabel ] of turtle ((n - 1) * 4)
   let cur-x [ xcor ] of turtle ((n - 1) * 4)
   let cur-y [ ycor ] of turtle ((n - 1) * 4)
   let is-moved? false
 
-;  print "current plabel"
-;  print cur-plabel
-;
-;  print [plabel] of patch (cur-x - 1) (cur-y + 1)
-;  print [plabel] of patch (cur-x) (cur-y + 1)
-;  print [plabel] of patch (cur-x + 1) (cur-y + 1)
-;  print [plabel] of patch (cur-x + 1) (cur-y )
-;    print [plabel] of patch (cur-x + 1) (cur-y - 1)
-;        print [plabel] of patch (cur-x ) (cur-y - 1)
-;            print [plabel] of patch (cur-x - 1) (cur-y - 1)
-;            print [plabel] of patch (cur-x - 1) (cur-y )
-;            print "====================================================="
-
-
-
   if ((shift-upleft-clear? n) and (([plabel] of patch (cur-x - 1) (cur-y + 1)) = (cur-plabel - 1)) and is-move-clear? patch (cur-x - 1) (cur-y + 1) and not is-moved?) [
-    ;print "masuk upleft"
     shift-upleft n
     set is-moved? true
   ]
   if shift-up-clear? n and (([plabel] of patch (cur-x) (cur-y + 1)) = (cur-plabel - 1)) and is-move-clear? patch (cur-x) (cur-y + 1) and not is-moved? [
-        ;print "masuk up"
     shift-up n
     set is-moved? true
   ]
   if shift-upright-clear? n and (([plabel] of patch (cur-x + 1) (cur-y + 1)) = (cur-plabel - 1)) and is-move-clear? patch (cur-x + 1) (cur-y + 1) and not is-moved? [
-;        print "masuk upright"
     shift-upright n
     set is-moved? true
   ]
   if shift-right-clear? n and (([plabel] of patch (cur-x + 1) (cur-y)) = (cur-plabel - 1)) and is-move-clear? patch (cur-x + 1) (cur-y) and not is-moved? [
-;        print "masuk right"
     shift-right n
     set is-moved? true
   ]
   if shift-downright-clear? n and (([plabel] of patch (cur-x + 1) (cur-y - 1)) = (cur-plabel - 1)) and is-move-clear? patch (cur-x + 1) (cur-y - 1) and not is-moved? [
-;        print "masuk downright"
     shift-downright n
     set is-moved? true
   ]
   if shift-down-clear? n and (([plabel] of patch (cur-x) (cur-y - 1)) = (cur-plabel - 1)) and is-move-clear? patch (cur-x) (cur-y - 1) and not is-moved? [
-;        print "masuk down"
     shift-down n
     set is-moved? true
   ]
   if shift-downleft-clear? n and (([plabel] of patch (cur-x - 1) (cur-y - 1)) = (cur-plabel - 1)) and is-move-clear? patch (cur-x - 1) (cur-y - 1) and not is-moved? [
-;        print "masuk downleft"
     shift-downleft n
     set is-moved? true
   ]
   if shift-left-clear? n and (([plabel] of patch (cur-x - 1) (cur-y)) = (cur-plabel - 1)) and is-move-clear? patch (cur-x - 1) (cur-y) and not is-moved? [
-;        print "masuk left"
     shift-left n
     set is-moved? true
+  ]
+end
+
+to create-virtual-obs
+  let set-obs (patches with [pcolor = white])
+  ask set-obs [
+    let x-tmp [pxcor] of self
+    let y-tmp [pycor] of self
+
+    if ([plabel] of patch (x-tmp + 2) (y-tmp + 1) = 999) and [pcolor] of patch (x-tmp + 2) (y-tmp + 1) != black [ ;east top
+      ask patch (x-tmp + 1) y-tmp [ if [pcolor] of self != red [set plabel 999 ]]
+      ask patch (x-tmp + 1) (y-tmp + 1) [ if [pcolor] of self != red [set plabel 999 ]]
+    ]
+    if ([plabel] of patch (x-tmp + 2) y-tmp = 999) and [pcolor] of patch (x-tmp + 2) y-tmp != black [ ;east center
+      ask patch (x-tmp + 1) y-tmp [ if [pcolor] of self != red [set plabel 999 ]]
+    ]
+    if ([plabel] of patch (x-tmp + 2) (y-tmp - 1) = 999) and [pcolor] of patch (x-tmp + 2) (y-tmp - 1) != black [ ;east bottom
+      ask patch (x-tmp + 1) y-tmp [ if [pcolor] of self != red [set plabel 999 ]]
+      ask patch (x-tmp + 1) (y-tmp - 1) [ if [pcolor] of self != red [set plabel 999 ]]
+    ]
+    if ([plabel] of patch (x-tmp + 1) (y-tmp - 2) = 999) and [pcolor] of patch (x-tmp + 1) (y-tmp - 2) != black [ ;south right
+      ask patch (x-tmp + 1) (y-tmp - 1) [ if [pcolor] of self != red [set plabel 999 ]]
+      ask patch (x-tmp + 1) (y-tmp) [ if [pcolor] of self != red [set plabel 999 ]]
+    ]
+    if ([plabel] of patch x-tmp (y-tmp - 2) = 999) and [pcolor] of patch x-tmp (y-tmp - 2) != black [;south center
+      ask patch (x-tmp) (y-tmp - 1) [ if [pcolor] of self != red [set plabel 999 ]]
+    ]
+    if ([plabel] of patch (x-tmp - 1) (y-tmp - 2) = 999) and [pcolor] of patch (x-tmp - 1) (y-tmp - 2) != black [ ;south left
+      ask patch (x-tmp - 1) (y-tmp - 1) [ if [pcolor] of self != red [set plabel 999 ]]
+      ask patch (x-tmp - 1) (y-tmp) [ if [pcolor] of self != red [set plabel 999 ]]
+    ]
+    if ([plabel] of patch (x-tmp - 2) (y-tmp - 1) = 999) and [pcolor] of patch (x-tmp - 2) (y-tmp - 1) != black [ ;west bottom
+      ask patch (x-tmp - 1) (y-tmp - 1) [ if [pcolor] of self != red [set plabel 999 ]]
+      ask patch (x-tmp) (y-tmp - 1) [ if [pcolor] of self != red [set plabel 999 ]]
+    ]
+    if ([plabel] of patch (x-tmp - 2) (y-tmp) = 999) and [pcolor] of patch (x-tmp - 2) (y-tmp) != black [ ;west center
+      ask patch (x-tmp - 1) (y-tmp) [ if [pcolor] of self != red [set plabel 999 ]]
+    ]
+    if ([plabel] of patch (x-tmp - 2) (y-tmp + 1) = 999) and [pcolor] of patch (x-tmp - 2) (y-tmp + 1) != black [ ;west top
+      ask patch (x-tmp - 1) (y-tmp) [ if [pcolor] of self != red [set plabel 999 ]]
+      ask patch (x-tmp - 1) (y-tmp + 1) [ if [pcolor] of self != red [set plabel 999 ]]
+    ]
+    if ([plabel] of patch (x-tmp - 1) (y-tmp + 2) = 999) and [pcolor] of patch (x-tmp - 1) (y-tmp + 2) != black [ ;north left
+      ask patch (x-tmp - 1) (y-tmp) [ if [pcolor] of self != red [set plabel 999 ]]
+      ask patch (x-tmp - 1) (y-tmp + 1) [ if [pcolor] of self != red [set plabel 999 ]]
+    ]
+    if ([plabel] of patch (x-tmp) (y-tmp + 2) = 999) and [pcolor] of patch (x-tmp) (y-tmp + 2) != black [ ;north center
+      ask patch (x-tmp) (y-tmp + 1) [ if [pcolor] of self != red [set plabel 999 ]]
+    ]
+    if ([plabel] of patch (x-tmp + 1) (y-tmp + 2) = 999) and [pcolor] of patch (x-tmp + 1) (y-tmp + 2) != black [ ;north right
+      ask patch (x-tmp + 1) (y-tmp) [ if [pcolor] of self != red [set plabel 999 ]]
+      ask patch (x-tmp + 1) (y-tmp + 1) [ if [pcolor] of self != red [set plabel 999 ]]
+    ]
   ]
 end
 @#$#@#$#@
