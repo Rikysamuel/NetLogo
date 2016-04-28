@@ -221,7 +221,7 @@ to-report clear? [p n]  ;; p is a patch, n indicates which robot (1,2,3,4)
     ifelse (is-robot-finish? 2) [
       ifelse (is-robot-finish? 4)
         [ ifelse (is-robot-finish? 3)
-          [ report true ]
+          [ report [pcolor] of p = black) or ([pcolor] of p = red) ]
           [ report (not any? robots3-on p) ]
         ]
         [
@@ -248,7 +248,7 @@ to-report clear? [p n]  ;; p is a patch, n indicates which robot (1,2,3,4)
       ifelse (is-robot-finish? 1) [
         ifelse (is-robot-finish? 3)
         [ ifelse (is-robot-finish? 4)
-          [ report true ]
+          [ report [pcolor] of p = black) or ([pcolor] of p = red) ]
           [ report (not any? robots4-on p) ]
         ]
         [
@@ -276,7 +276,7 @@ to-report clear? [p n]  ;; p is a patch, n indicates which robot (1,2,3,4)
         ifelse (is-robot-finish? 1) [
           ifelse (is-robot-finish? 2)
           [ ifelse (is-robot-finish? 4)
-            [ report true ]
+            [ report [pcolor] of p = black) or ([pcolor] of p = red) ]
             [ report (not any? robots4-on p) ]
           ]
           [
@@ -303,7 +303,7 @@ to-report clear? [p n]  ;; p is a patch, n indicates which robot (1,2,3,4)
         ifelse (is-robot-finish? 1) [
           ifelse (is-robot-finish? 2)
           [ ifelse (is-robot-finish? 3)
-            [ report true ]
+            [ report [pcolor] of p = black) or ([pcolor] of p = red) ]
             [ report (not any? robots3-on p) ]
           ]
           [
