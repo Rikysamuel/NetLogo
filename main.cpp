@@ -215,6 +215,7 @@ State find_start(const vs &grid, char sym_start) {
 char mov_char[] = {'1', '2', '3', '4', '6', '7', '8', '9'};
 
 int main() {
+	freopen("test.in", "r", stdin);
     int n_row, n_col;
     scanf("%d %d%*c", &n_row, &n_col);
     
@@ -273,7 +274,6 @@ int main() {
     	}
 
     	cout << path << endl; // output answer
-    	break;
     }
 
     // int pattern = 0;

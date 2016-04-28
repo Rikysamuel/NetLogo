@@ -1,0 +1,2 @@
+make:
+	./main < test.in
