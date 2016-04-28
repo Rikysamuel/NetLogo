@@ -7,13 +7,15 @@ breed [ robots4 robotD ]
 
 globals [
   list-goal
-  goal_x
-  goal_y
   draw?
   num-of-parts
   map-mx
   is-computed?
   is-init?
+  dist-robot1
+  dist-robot2
+  dist-robot3
+  dist-robot4
 ]
 
 turtles-own [
@@ -31,6 +33,10 @@ to Initiate
   set is-computed? false
   set is-init? false
   set list-goal []
+  set dist-robot1 0
+  set dist-robot2 0
+  set dist-robot3 0
+  set dist-robot4 0
 
   ;; draw the board
   ask patches
@@ -207,11 +213,21 @@ to draw-goal
 end
 
 to go
+;  if (is-robot-finish? 1) and (is-robot-finish? 2) and (is-robot-finish? 3) and (is-robot-finish? 4) [
+;    output-print "Total distance :"
+;    ask turtle 0 [ output-print dist]
+;    ask turtle 4 [ output-print dist]
+;    ask turtle 8 [ output-print dist]
+;    ask turtle 12 [ output-print dist]
+;    stop
+;  ]
+  if (is-robot-finish? 1) and (is-robot-finish? 2) and (is-robot-finish? 3) and (is-robot-finish? 4) [stop]
   set-obstacle-and-goal
   create-virtual-obs
   do-flood-fill
   ask turtles [ find-goal ]
   display
+  tick
 end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -340,10 +356,10 @@ to-report is-finish? [p]
 end
 
 to-report clear-at? [n xoff yoff]
-  if n = 1 [report all? robots [clear? patch-at xoff yoff n]]
-  if n = 2 [report all? robots2 [clear? patch-at xoff yoff n]]
-  if n = 3 [report all? robots3 [clear? patch-at xoff yoff n]]
-  if n = 4 [report all? robots4 [clear? patch-at xoff yoff n]]
+  if n = 1 [report all? robots [ (clear? patch-at xoff yoff n) ] ]
+  if n = 2 [report all? robots2 [ (clear? patch-at xoff yoff n) ] ]
+  if n = 3 [report all? robots3 [ (clear? patch-at xoff yoff n) ] ]
+  if n = 4 [report all? robots4 [ (clear? patch-at xoff yoff n) ] ]
 end
 
 to-report rotate-left-clear? [n] ;; n indicates which robot (1,2,3,4)
@@ -521,11 +537,6 @@ to do-flood-fill
     ask turtle 12 [ set dist [plabel] of patch-here]
 
     set is-computed? true
-;    output-print "Total distance :"
-;    ask turtle 0 [ output-print dist]
-;    ask turtle 4 [ output-print dist]
-;    ask turtle 8 [ output-print dist]
-;    ask turtle 12 [ output-print dist]
   ]
 end
 
@@ -554,11 +565,36 @@ end
 
 to set-obstacle-and-goal
   if (is-init? = false) [
+    ask patches [
+      if ([ pcolor ] of self = white) [
+        ask patch ([pxcor] of self) ([pycor] of self + 1) [ if ([ pcolor ] of self = black) [ set pcolor brown ]]
+        ask patch ([pxcor] of self + 1) ([pycor] of self + 1) [ if ([ pcolor ] of self = black) [ set pcolor brown ]]
+        ask patch ([pxcor] of self + 1) ([pycor] of self) [ if ([ pcolor ] of self = black) [ set pcolor brown ]]
+        ask patch ([pxcor] of self + 1) ([pycor] of self - 1) [ if ([ pcolor ] of self = black) [ set pcolor brown ]]
+        ask patch ([pxcor] of self) ([pycor] of self - 1) [ if ([ pcolor ] of self = black) [ set pcolor brown ]]
+        ask patch ([pxcor] of self - 1) ([pycor] of self - 1) [ if ([ pcolor ] of self = black) [ set pcolor brown ]]
+        ask patch ([pxcor] of self - 1) ([pycor] of self) [ if ([ pcolor ] of self = black) [ set pcolor brown ]]
+        ask patch ([pxcor] of self - 1) ([pycor] of self + 1) [ if ([ pcolor ] of self = black) [ set pcolor brown ]]
+      ]
+    ]
+
     let set-goal (patches with [pcolor = red])
     let set-obs (patches with [pcolor = white])
+    let set-obs-border (patches with [pcolor = brown])
     let set-border (patches with [pcolor = gray])
 
+    ask set-goal [
+      set list-goal lput self list-goal
+      set plabel 0
+      set plabel-color white
+    ]
+
     ask set-obs [
+      set plabel 999
+      set plabel-color red
+    ]
+
+    ask set-obs-border [
       set plabel 999
       set plabel-color red
     ]
@@ -566,12 +602,6 @@ to set-obstacle-and-goal
     ask set-border [
       set plabel 999
       set plabel-color red
-    ]
-
-    ask set-goal [
-      set list-goal lput self list-goal
-      set plabel 0
-      set plabel-color white
     ]
 
     set is-init? true
@@ -623,20 +653,39 @@ to move [n] ; n indicates which robot (1 2 3 4)
     shift-left n
     set is-moved? true
   ]
+
+  if is-moved? [
+    if (n = 1) [
+      set dist-robot1 (dist-robot1 + 1)
+      ask turtle 0 [pen-down]
+    ]
+    if (n = 2) [
+      set dist-robot2 (dist-robot2 + 1)
+      ask turtle 4 [pen-down]
+    ]
+    if (n = 3) [
+      set dist-robot3 (dist-robot3 + 1)
+      ask turtle 8 [pen-down]
+    ]
+    if (n = 4) [
+      set dist-robot4 (dist-robot4 + 1)
+      ask turtle 12 [pen-down]
+    ]
+  ]
 end
 
 to create-virtual-obs
-  let set-obs (patches with [pcolor = white])
+  let set-obs (patches with [pcolor = brown])
   ask set-obs [
     let x-tmp [pxcor] of self
     let y-tmp [pycor] of self
 
-    if (patch (x-tmp + 2) (y-tmp + 1) != nobody) [
-      if ([plabel] of patch (x-tmp + 2) (y-tmp + 1) = 999) and [pcolor] of patch (x-tmp + 2) (y-tmp + 1) != black [ ;east top
-        ask patch (x-tmp + 1) y-tmp [ if [pcolor] of self != red [set plabel 999 ]]
-        ask patch (x-tmp + 1) (y-tmp + 1) [ if [pcolor] of self != red [set plabel 999 ]]
-      ]
-    ]
+;    if (patch (x-tmp + 2) (y-tmp + 1) != nobody) [
+;      if ([plabel] of patch (x-tmp + 2) (y-tmp + 1) = 999) and [pcolor] of patch (x-tmp + 2) (y-tmp + 1) != black [ ;east top
+;        ask patch (x-tmp + 1) y-tmp [ if [pcolor] of self != red [set plabel 999 ]]
+;        ask patch (x-tmp + 1) (y-tmp + 1) [ if [pcolor] of self != red [set plabel 999 ]]
+;      ]
+;    ]
     if (patch (x-tmp + 2) y-tmp != nobody) [
       if ([plabel] of patch (x-tmp + 2) y-tmp = 999) and [pcolor] of patch (x-tmp + 2) y-tmp != black [ ;east center
         ask patch (x-tmp + 1) y-tmp [ if [pcolor] of self != red [set plabel 999 ]]
@@ -665,12 +714,12 @@ to create-virtual-obs
         ask patch (x-tmp - 1) (y-tmp) [ if [pcolor] of self != red [set plabel 999 ]]
       ]
     ]
-    if (patch (x-tmp - 2) (y-tmp - 1) != nobody) [
-      if ([plabel] of patch (x-tmp - 2) (y-tmp - 1) = 999) and [pcolor] of patch (x-tmp - 2) (y-tmp - 1) != black [ ;west bottom
-        ask patch (x-tmp - 1) (y-tmp - 1) [ if [pcolor] of self != red [set plabel 999 ]]
-        ask patch (x-tmp) (y-tmp - 1) [ if [pcolor] of self != red [set plabel 999 ]]
-      ]
-    ]
+;    if (patch (x-tmp - 2) (y-tmp - 1) != nobody) [
+;      if ([plabel] of patch (x-tmp - 2) (y-tmp - 1) = 999) and [pcolor] of patch (x-tmp - 2) (y-tmp - 1) != black [ ;west bottom
+;        ask patch (x-tmp - 1) (y-tmp - 1) [ if [pcolor] of self != red [set plabel 999 ]]
+;        ask patch (x-tmp) (y-tmp - 1) [ if [pcolor] of self != red [set plabel 999 ]]
+;      ]
+;    ]
     if (patch (x-tmp - 2) (y-tmp) != nobody) [
       if ([plabel] of patch (x-tmp - 2) (y-tmp) = 999) and [pcolor] of patch (x-tmp - 2) (y-tmp) != black [ ;west center
         ask patch (x-tmp - 1) (y-tmp) [ if [pcolor] of self != red [set plabel 999 ]]
@@ -946,10 +995,13 @@ distance
 0.0
 10.0
 true
-false
+true
 "" ""
 PENS
-"default" 1.0 0 -16777216 true "" "plot count turtles"
+"robot 1" 1.0 0 -1184463 true "" "plot dist-robot1"
+"robot 2" 1.0 0 -7500403 true "" "plot dist-robot2"
+"robot 3" 1.0 0 -2674135 true "" "plot dist-robot3"
+"robot 4" 1.0 0 -955883 true "" "plot dist-robot4"
 
 OUTPUT
 24
