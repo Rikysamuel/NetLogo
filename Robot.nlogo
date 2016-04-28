@@ -1,5 +1,4 @@
-extensions [ array ]
-extensions [ matrix ]
+extensions [ shell matrix]
 breed [ robots robot ]
 breed [ robots2 robotB ]
 breed [ robots3 robotC ]
@@ -248,7 +247,7 @@ to call-command-line
     ]
     let i-idx 22 ;sampai 0
     let j-idx 0 ;sampai 11
-    let tmpstr "22 43\n"
+    let tmpstr "23 43\n"
 
     while [i-idx >= 0] [
       while [j-idx <= 42] [
@@ -274,8 +273,11 @@ to call-command-line
       set i-idx (i-idx - 1)
       set j-idx 0
     ]
-    print tmpstr
-
+;    print tmpstr
+    file-open "test.in"
+    file-print tmpstr
+    file-flush
+    file-close
   ]
 end
 
