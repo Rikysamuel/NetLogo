@@ -123,10 +123,10 @@ end
 
 to shift-upright [n]
   if shift-upright-clear? n [
-    if (n = 1) [ ask robots [ set ycor ycor + 1  set xcor xcor + 1 ] ]
-    if (n = 2) [ ask robots2 [ set ycor ycor + 1  set xcor xcor + 1 ] ]
-    if (n = 3) [ ask robots3 [ set ycor ycor + 1 set xcor xcor + 1 ] ]
-    if (n = 4) [ ask robots4 [ set ycor ycor + 1 set xcor xcor + 1 ] ]
+    if (n = 1) [ ask robots [ setxy (xcor + 1) (ycor + 1)   ] ]
+    if (n = 2) [ ask robots2 [ setxy (xcor + 1) (ycor + 1) ] ]
+    if (n = 3) [ ask robots3 [ setxy (xcor + 1) (ycor + 1) ] ]
+    if (n = 4) [ ask robots4 [ setxy (xcor + 1) (ycor + 1) ] ]
   ]
 end
 
@@ -136,10 +136,10 @@ end
 
 to shift-upleft [n]
   if shift-upleft-clear? n [
-    if (n = 1) [ ask robots [ set ycor ycor + 1  set xcor xcor - 1 ] ]
-    if (n = 2) [ ask robots2 [ set ycor ycor + 1  set xcor xcor - 1 ] ]
-    if (n = 3) [ ask robots3 [ set ycor ycor + 1 set xcor xcor - 1 ] ]
-    if (n = 4) [ ask robots4 [ set ycor ycor + 1 set xcor xcor - 1 ] ]
+    if (n = 1) [ ask robots [ setxy (xcor - 1) (ycor + 1) ] ]
+    if (n = 2) [ ask robots2 [ setxy (xcor - 1) (ycor + 1) ] ]
+    if (n = 3) [ ask robots3 [ setxy (xcor - 1) (ycor + 1) ] ]
+    if (n = 4) [ ask robots4 [ setxy (xcor - 1) (ycor + 1) ] ]
   ]
 end
 
@@ -149,10 +149,10 @@ end
 
 to shift-downright [n]
   if shift-downright-clear? n [
-  if (n = 1) [ ask robots [ set ycor ycor - 1  set xcor xcor + 1 ] ]
-  if (n = 2) [ ask robots2 [ set ycor ycor - 1  set xcor xcor + 1 ] ]
-  if (n = 3) [ ask robots3 [ set ycor ycor - 1 set xcor xcor + 1 ] ]
-  if (n = 4) [ ask robots4 [ set ycor ycor - 1 set xcor xcor + 1 ] ]
+  if (n = 1) [ ask robots [ setxy (xcor + 1) (ycor - 1) ] ]
+  if (n = 2) [ ask robots2 [ setxy (xcor + 1) (ycor - 1) ] ]
+  if (n = 3) [ ask robots3 [ setxy (xcor + 1) (ycor - 1) ] ]
+  if (n = 4) [ ask robots4 [ setxy (xcor + 1) (ycor - 1) ] ]
   ]
 end
 
@@ -162,10 +162,10 @@ end
 
 to shift-downleft [n]
   if shift-downleft-clear? n [
-    if (n = 1) [ ask robots [ set ycor ycor - 1  set xcor xcor - 1 ] ]
-    if (n = 2) [ ask robots2 [ set ycor ycor - 1  set xcor xcor - 1 ] ]
-    if (n = 3) [ ask robots3 [ set ycor ycor - 1 set xcor xcor - 1 ] ]
-    if (n = 4) [ ask robots4 [ set ycor ycor - 1 set xcor xcor - 1 ] ]
+    if (n = 1) [ ask robots [ setxy (xcor - 1) (ycor - 1) ] ]
+    if (n = 2) [ ask robots2 [ setxy (xcor - 1) (ycor - 1) ] ]
+    if (n = 3) [ ask robots3 [ setxy (xcor - 1) (ycor - 1) ] ]
+    if (n = 4) [ ask robots4 [ setxy (xcor - 1) (ycor - 1) ] ]
   ]
 end
 
