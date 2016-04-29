@@ -194,12 +194,11 @@ end
 to go
   if (is-robot-finish? 1) and (is-robot-finish? 2) and (is-robot-finish? 3) and (is-robot-finish? 4) [
     output-print "Total distance :"
-    let d1 "d1: "
 
-    ask turtle 0 [ output-write d1 output-print dist-robot1]
-    ask turtle 4 [ output-write "d2: " output-print dist-robot2]
-    ask turtle 8 [ output-write "d3: " output-print dist-robot3]
-    ask turtle 12 [ output-write "d4: " output-print dist-robot4]
+    ask turtle 0 [ output-print (word "d1: " dist-robot1)]
+    ask turtle 4 [ output-print (word "d2: " dist-robot2)]
+    ask turtle 8 [ output-print (word "d3: " dist-robot3)]
+    ask turtle 12 [ output-print (word "d4: " dist-robot4)]
     stop
   ]
   if (is-robot-finish? 1) and (is-robot-finish? 2) and (is-robot-finish? 3) and (is-robot-finish? 4) [stop]
